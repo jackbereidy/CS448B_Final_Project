@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://d3js.org/d3.v4.min.js'></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script>
+    let plotWidth = 500;
+    let plotHeight = 500;
+    let plotMargin = 100;
+    let outerWidth = plotWidth + 2 * plotMargin;
+    let outerHeight = plotHeight + 2 * plotMargin;
+
+    let wholePlot = d3.select('body').append('svg')
+        .attr('width', outerWidth)
+        .attr('height', outerHeight)
+        .attr('id', 'whole-chart');
+
+    let plot = wholePlot.append('g')
+        .attr('transform', `translate(${plotMargin},${plotMargin})`);
+
+    let xScale = d3.scaleLinear()
+        .domain([0, 10])
+        .range([0, plotWidth]);
+    let yScale = d3.scaleLinear()
+        .domain([0, 10])
+        .range([plotHeight, 0]);
+
+    let xAxis = plot.append('g')
+        .attr('transform', `translate(0,${plotHeight})`)
+        .call(d3.axisBottom(xScale));
+    let yAxis = plot.append('g')
+        .call(d3.axisLeft(yScale));
+
+    let lowExtremeX = createQuartilePlotElement(true, true);
+    let highExtremeX = createQuartilePlotElement(true, true);
+    let lowerQuartileX = createQuartilePlotElement(true, false);
+    let upperQuartileX = createQuartilePlotElement(true, false);
+    let medianX = createQuartilePlotElement(true, false);
+
+    let lowExtremeY = createQuartilePlotElement(false, true);
+    let highExtremeY = createQuartilePlotElement(false, true);
+    let lowerQuartileY = createQuartilePlotElement(false, false);
+    let upperQuartileY = createQuartilePlotElement(false, false);
+    let medianY = createQuartilePlotElement(false, false);
+
+
+    function createQuartilePlotElement(isHorizontal, isExtreme) {
+        let quartile = plot.append('g')
+            .attr('transform', `translate(0,${plotHeight})`)
+            .attr('class', 'quartileElement');
+        quartile.append('circle')
+            .attr('class', 'quartile-circle')
+            .attr('r', '5.0');
+        if (!isExtreme) {
+            let line = quartile.append('line')
+                .attr('class', 'quartile-line')
+                .attr('x1', -30)
+                .attr('x2', 30)
+                .attr('y1', 0)
+                .attr('y2', 0)
+                .attr('stroke', '#000');
+            if (isHorizontal) {
+                line.attr('transform', `rotate(90)`);
+            }
+        }
+        return quartile;
+    }
+
+    d3.csv('animals.csv', parseInputRow, loadData);
+
+    function parseInputRow(d) {
+        return {
+            id: +d.id,
+            animal: d.animal,
+            x: +d.weight,
+            y: +d.height,
+            name: d.name
+        };
+    }
+
+    function loadData(error, data) {
+        if (error) throw error;
+        drawScatterPlot(data);
+        updateQuartiles(data);
+    }
+
+    function drawScatterPlot(data) {
+
+        let circles = plot.selectAll('circle.point');
+
+        let updatedCircles = circles.data(data, d => d.id);
+
+        let enterSelection = updatedCircles.enter();
+        let newCircles = enterSelection.append('circle')
+            .attr('class', 'point')
+            .attr('r', 5)
+            .attr('cx', function (d) { return xScale(d.x); })
+            .attr('cy', function (d) { return yScale(d.y); })
+            .style('fill', function (d) {
+                return d.animal === 'cat' ? 'steelblue' : 'steelblue';
+            });
+
+        let unselectedCircles = updatedCircles.exit();
+
+        updatedCircles.exit().remove();
+    }
+
+    function updateQuartiles(data) {
+        let sortedDataX = data.slice(0).sort(function (a, b) {
+            return d3.ascending(a.x, b.x);
+        });
+        let sortedDataY = data.slice(0).sort(function (a, b) {
+            return d3.ascending(a.y, b.y);
+        });
+
+        let medianXValue = xScale(getMedianValue(sortedDataX, true));
+        let lowExtremeXValue = xScale(sortedDataX[0].x);
+        let highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
+
+        medianX.attr('transform', `translate(${medianXValue},${plotHeight})`);
+        lowExtremeX.attr('transform', `translate(${lowExtremeXValue},${plotHeight})`);
+        highExtremeX.attr('transform', `translate(${highExtremeXValue},${plotHeight})`);
+
+        let lowerQuartileXValue = 0;
+        let upperQuartileXValue = 0;
+        if (data.length % 2 == 0) {
+            lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2 - 1), true));
+            upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
+            lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
+            upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+        } else {
+            lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2), true));
+            upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
+            lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
+            upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+        }
+
+        let medianYValue = yScale(getMedianValue(sortedDataY, false));
+        let lowExtremeYValue = yScale(sortedDataY[0].y);
+        let highExtremeYValue = yScale(sortedDataY[sortedDataY.length - 1].y);
+
+        medianY.attr('transform', `translate(0,${medianYValue})`);
+        lowExtremeY.attr('transform', `translate(0,${lowExtremeYValue})`);
+        highExtremeY.attr('transform', `translate(0,${highExtremeYValue})`);
+
+        let lowerQuartileYValue = 0;
+        let upperQuartileYValue = 0;
+        if (data.length % 2 == 0) {
+            lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2 - 1), false));
+            upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
+            lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
+            upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
+        } else {
+            lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2), false));
+            upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
+            lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
+            upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
+        }
+
+    }
+
+    function getMedianValue(data, isHorizontal) {
+        if (data.length % 2 == 0) {
+            let lower, higher = 0;
+            if (isHorizontal) {
+                lower = data[Math.floor(data.length / 2) - 1].x;
+                higher = data[Math.floor(data.length / 2)].x;
+            } else {
+                lower = data[Math.floor(data.length / 2) - 1].y;
+                higher = data[Math.floor(data.length / 2)].y;
+            }
+            return (lower + higher) / 2;
+        } else {
+            if (isHorizontal) {
+                return data[Math.floor(data.length / 2)].x;
+            } else {
+                return data[Math.floor(data.length / 2)].y;
+            }
+        }
+    }
+
+</script>
