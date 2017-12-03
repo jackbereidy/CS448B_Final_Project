@@ -17,9 +17,9 @@
     <div> Quartile
         <input id='quartile-checkbox' type='checkbox'>
         <select id='quartile-mode'>
-            <option value="minimal">Minimal</option>
-            <option value="box-and-whisker">Box and whisker</option>
-            <option value="in-graph">In graph</option>
+            <option selected value="0">Minimal</option>
+            <option value="1">Box and whisker</option>
+            <option value="2">In graph</option>
         </select>
     </div>
 </body>
@@ -30,6 +30,13 @@
     path {
         fill: none;
         stroke: #aaa;
+    }
+
+    .quartile-minimal {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1.5;
+        pointer-events: none;
     }
 </style>
 
@@ -75,17 +82,47 @@
     let yQuartiles = plot.append('g')
         .attr('id', 'y-quartiles');
 
-    let lowExtremeX = createQuartilePlotElement(xQuartiles, true, true);
-    let highExtremeX = createQuartilePlotElement(xQuartiles, true, true);
-    let lowerQuartileX = createQuartilePlotElement(xQuartiles, true, false);
-    let upperQuartileX = createQuartilePlotElement(xQuartiles, true, false);
-    let medianX = createQuartilePlotElement(xQuartiles, true, false);
+    let boxAndWhiskerElementsX = xQuartiles.append('g')
+        .attr('class', 'boxAndWhiskerElements');
+    let boxAndWhiskerElementsY = yQuartiles.append('g')
+        .attr('class', 'boxAndWhiskerElements');
 
-    let lowExtremeY = createQuartilePlotElement(yQuartiles, false, true);
-    let highExtremeY = createQuartilePlotElement(yQuartiles, false, true);
-    let lowerQuartileY = createQuartilePlotElement(yQuartiles, false, false);
-    let upperQuartileY = createQuartilePlotElement(yQuartiles, false, false);
-    let medianY = createQuartilePlotElement(yQuartiles, false, false);
+    let lowExtremeX = createQuartilePlotElement(boxAndWhiskerElementsX, true, true);
+    let highExtremeX = createQuartilePlotElement(boxAndWhiskerElementsX, true, true);
+    let lowerQuartileX = createQuartilePlotElement(boxAndWhiskerElementsX, true, false);
+    let upperQuartileX = createQuartilePlotElement(boxAndWhiskerElementsX, true, false);
+    let medianX = createQuartilePlotElement(boxAndWhiskerElementsX, true, false);
+
+    let lowExtremeY = createQuartilePlotElement(boxAndWhiskerElementsY, false, true);
+    let highExtremeY = createQuartilePlotElement(boxAndWhiskerElementsY, false, true);
+    let lowerQuartileY = createQuartilePlotElement(boxAndWhiskerElementsY, false, false);
+    let upperQuartileY = createQuartilePlotElement(boxAndWhiskerElementsY, false, false);
+    let medianY = createQuartilePlotElement(boxAndWhiskerElementsY, false, false);
+
+    let minimalElementsX = xQuartiles.append('g')
+        .attr('class', 'minimalElements');
+    minimalElementsX.append('line')
+        .attr("class", "quartile-minimal line-0");
+    minimalElementsX.append('line')
+        .attr("class", "quartile-minimal line-1");
+    minimalElementsX.append('line')
+        .attr("class", "quartile-minimal line-2");
+    minimalElementsX.append('line')
+        .attr("class", "quartile-minimal line-3");
+
+    let minimalElementsY = yQuartiles.append('g')
+        .attr('class', 'minimalElements');
+    minimalElementsY.append('line')
+        .attr("class", "quartile-minimal line-0");
+    minimalElementsY.append('line')
+        .attr("class", "quartile-minimal line-1");
+    minimalElementsY.append('line')
+        .attr("class", "quartile-minimal line-2");
+    minimalElementsY.append('line')
+        .attr("class", "quartile-minimal line-3");
+
+    let currentQuartileMode = 0;
+
 
     let pointData;
 
@@ -93,15 +130,28 @@
     let chartLinesActive;
     let quartileActive;
 
+    function createMinimalQuartilePlotElement(group, isOuter) {
+        let minimalGroup = quartile.append('g')
+            .attr('class', 'minimalElement');
+        let minimalLine = minimalGroup.append('line')
+            .attr('class', 'minimal-line')
+            .attr('x1', 0)
+            .attr('x2', 1)
+            .attr('y1', 0)
+            .attr('y2', 0)
+            .attr('stroke', '#100');
+    }
+
     function createQuartilePlotElement(group, isHorizontal, isExtreme) {
-        let quartile = group.append('g')
+        let boxAndWhisker = group.append('g')
             .attr('transform', `translate(0,${plotHeight})`)
-            .attr('class', 'quartileElement');
-        quartile.append('circle')
+            .attr('class', 'boxAndWhiskerElement');
+
+        boxAndWhisker.append('circle')
             .attr('class', 'quartile-circle')
             .attr('r', '5.0');
         if (!isExtreme) {
-            let line = quartile.append('line')
+            let line = boxAndWhisker.append('line')
                 .attr('class', 'quartile-line')
                 .attr('x1', -30)
                 .attr('x2', 30)
@@ -112,7 +162,7 @@
                 line.attr('transform', `rotate(90)`);
             }
         }
-        return quartile;
+        return boxAndWhisker;
     }
 
     d3.csv('animals.csv', parseInputRow, loadData);
@@ -277,9 +327,42 @@
 
     }
 
+    function updateQuartileVisibility() {
+        if (quartileActive) {
+            xQuartiles.attr('visibility', 'visible');
+            yQuartiles.attr('visibility', 'visible');
+            switch (currentQuartileMode) {
+                case 2:
+                    console.log('in graph to be implemented')
+
+                case 1:
+                    console.log('box and whisker mode active');
+                    yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
+                    xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
+                    yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    xQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    break;
+                case 0:
+                default:
+                    console.log('minimal mode active');
+                    yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
+                    xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
+                    yQuartiles.select('.minimalElements').attr('visibility', 'visible');
+                    xQuartiles.select('.minimalElements').attr('visibility', 'visible');
+            }
+        } else {
+            xQuartiles.attr('visibility', 'hidden');
+            yQuartiles.attr('visibility', 'hidden');
+            yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+            xQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+            yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
+            xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
+        }
+
+    }
+
     function drawUpdatedQuartiles(data, sortedDataX, sortedDataY) {
         if (quartileActive) {
-
             let medianXValue = xScale(getMedianValue(sortedDataX, true));
             let lowExtremeXValue = xScale(sortedDataX[0].x);
             let highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
@@ -301,6 +384,27 @@
                 lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
                 upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
             }
+
+            minimalElementsX.select('line.line-0')
+                .attr('x1', lowExtremeXValue)
+                .attr('y1', yScale(0))
+                .attr('x2', lowerQuartileXValue)
+                .attr('y2', yScale(0));
+            minimalElementsX.select('line.line-1')
+                .attr('x1', lowerQuartileXValue)
+                .attr('y1', yScale(0) - 5)
+                .attr('x2', medianXValue - 5)
+                .attr('y2', yScale(0) - 5);
+            minimalElementsX.select('line.line-2')
+                .attr('x1', medianXValue + 5)
+                .attr('y1', yScale(0) - 5)
+                .attr('x2', upperQuartileXValue)
+                .attr('y2', yScale(0) - 5);
+            minimalElementsX.select('line.line-3')
+                .attr('x1', upperQuartileXValue)
+                .attr('y1', yScale(0))
+                .attr('x2', highExtremeXValue)
+                .attr('y2', yScale(0));
 
             let medianYValue = yScale(getMedianValue(sortedDataY, false));
             let lowExtremeYValue = yScale(sortedDataY[0].y);
@@ -324,14 +428,29 @@
                 upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
             }
 
+            minimalElementsY.select('line.line-0')
+                .attr('y1', lowExtremeYValue)
+                .attr('x1', xScale(0) + 1)
+                .attr('y2', lowerQuartileYValue)
+                .attr('x2', xScale(0) + 1);
+            minimalElementsY.select('line.line-1')
+                .attr('y1', lowerQuartileYValue)
+                .attr('x1', xScale(0) + 5)
+                .attr('y2', medianYValue + 5)
+                .attr('x2', xScale(0) + 5);
+            minimalElementsY.select('line.line-2')
+                .attr('y1', medianYValue - 5)
+                .attr('x1', xScale(0) + 6)
+                .attr('y2', upperQuartileYValue)
+                .attr('x2', xScale(0) + 6);
+            minimalElementsY.select('line.line-3')
+                .attr('y1', upperQuartileYValue)
+                .attr('x1', xScale(0) + 1)
+                .attr('y2', highExtremeYValue)
+                .attr('x2', xScale(0) + 1);
+
             xQuartiles.moveToBack();
             yQuartiles.moveToBack();
-
-            xQuartiles.attr('visibility', 'visible');
-            yQuartiles.attr('visibility', 'visible');
-        } else {
-            xQuartiles.attr('visibility', 'hidden');
-            yQuartiles.attr('visibility', 'hidden');
         }
     }
 
@@ -372,11 +491,20 @@
                 drawSecondaryPlotElements(pointData);
             });
         quartileActive = false;
+        updateQuartileVisibility();
         d3.select('#quartile-checkbox')
             .property('checked', quartileActive)
             .on('change', function () {
                 quartileActive = this.checked;
+                updateQuartileVisibility();
                 drawSecondaryPlotElements(pointData);
+            });
+        let quartileModeSelect = d3.select('#quartile-mode')
+            .on('change', function () {
+                currentQuartileMode = parseInt(this.options[this.selectedIndex].value);
+                if (quartileActive) {
+                    updateQuartileVisibility();
+                }
             });
     }
 
