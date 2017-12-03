@@ -7,9 +7,21 @@
 </head>
 
 <body>
-    <p id='pcc-text'></p>
-    <input id='trend-line-checkbox' type='checkbox'>
-
+    <div>Trend Line
+        <input id='trend-line-checkbox' type='checkbox'>
+        <span id='pcc-text'></span>
+    </div>
+    <div>Chart Lines
+        <input id='chart-lines-checkbox' type='checkbox'>
+    </div>
+    <div> Quartile
+        <input id='quartile-checkbox' type='checkbox'>
+        <select id='quartile-mode'>
+            <option value="minimal">Minimal</option>
+            <option value="box-and-whisker">Box and whisker</option>
+            <option value="in-graph">In graph</option>
+        </select>
+    </div>
 </body>
 
 </html>
@@ -77,7 +89,9 @@
 
     let pointData;
 
-    let trendLineActive = false;
+    let trendLineActive;
+    let chartLinesActive;
+    let quartileActive;
 
     function createQuartilePlotElement(group, isHorizontal, isExtreme) {
         let quartile = group.append('g')
@@ -116,8 +130,9 @@
     function loadData(error, data) {
         if (error) throw error;
         pointData = data;
-
+        drawUpdatedScatterPlot(pointData);
         drawSecondaryPlotElements(pointData);
+        setUpInputBar();
     }
 
     function drawUpdatedScatterPlot(data) {
@@ -156,9 +171,8 @@
         let sortedDataY = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.y, b.y);
         });
-        drawUpdatedScatterPlot(pointData, sortedDataX, sortedDataY);
         drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
-        if (trendLineActive) drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
+        drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
         drawUpdatedChartLines(pointData, sortedDataX, sortedDataY);
     }
 
@@ -194,119 +208,131 @@
         .x(function (d) { return xScale(d.x) })
         .y(function (d) { return yScale(d.y) });
     function drawUpdatedTrendLine(data, sortedDataX, sortedDataY) {
-        let sumX = 0;
-        let sumY = 0;
-        let sumXY = 0;
-        let sumXSquare = 0;
-        let sumYSquare = 0;
-        let n = data.length;
-
-        for (i = 0; i < sortedDataX.length; i++) {
-            sumX += sortedDataX[i].x;
-            sumY += sortedDataX[i].y;
-            sumXY += sortedDataX[i].x * sortedDataX[i].y;
-            sumXSquare += sortedDataX[i].x * sortedDataX[i].x;
-            sumYSquare += sortedDataX[i].y * sortedDataX[i].y;
-        }
-
-        let a = ((sumY * sumXSquare) - (sumX * sumXY)) / ((n * sumXSquare) - (sumX * sumX));
-        let b = ((n * sumXY) - (sumX * sumY)) / ((n * sumXSquare) - (sumX * sumX));
-        console.log("a: " + a + ", b: " + b);
-
         plot.select("#trend-line").remove();
+        if (trendLineActive) {
+            let sumX = 0;
+            let sumY = 0;
+            let sumXY = 0;
+            let sumXSquare = 0;
+            let sumYSquare = 0;
+            let n = data.length;
 
-        let trendLine = plot.append("line")
-            .attr('x1', xScale(sortedDataX[0].x))
-            .attr('y1', yScale(sortedDataX[0].x * b + a))
-            .attr('x2', xScale(sortedDataX[sortedDataX.length-1].x))
-            .attr('y2', yScale(sortedDataX[sortedDataX.length-1].x * b + a))
-            .attr("fill", "none")
-            .attr('id', 'trend-line')
-            .attr("class", "chart-line")
-            .attr("stroke", "grey")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("pointer-events", "none");
+            for (i = 0; i < sortedDataX.length; i++) {
+                sumX += sortedDataX[i].x;
+                sumY += sortedDataX[i].y;
+                sumXY += sortedDataX[i].x * sortedDataX[i].y;
+                sumXSquare += sortedDataX[i].x * sortedDataX[i].x;
+                sumYSquare += sortedDataX[i].y * sortedDataX[i].y;
+            }
 
-        trendLine.moveToBack();
+            let a = ((sumY * sumXSquare) - (sumX * sumXY)) / ((n * sumXSquare) - (sumX * sumX));
+            let b = ((n * sumXY) - (sumX * sumY)) / ((n * sumXSquare) - (sumX * sumX));
+            //console.log("a: " + a + ", b: " + b);
 
-        let pccNumerator = (n * sumXY) - (sumX * sumY);
-        let pccDenominator = Math.sqrt( ((n * sumXSquare) - (sumX * sumX)) * ((n * sumYSquare) - (sumY * sumY)) );
-        let pcc = pccNumerator / pccDenominator;
-        
-        document.getElementById("pcc-text").textContent = 'Pearson correlation coefficient (r): ' + pcc.toFixed(3);
+            let trendLine = plot.append("line")
+                .attr('x1', xScale(sortedDataX[0].x))
+                .attr('y1', yScale(sortedDataX[0].x * b + a))
+                .attr('x2', xScale(sortedDataX[sortedDataX.length - 1].x))
+                .attr('y2', yScale(sortedDataX[sortedDataX.length - 1].x * b + a))
+                .attr("fill", "none")
+                .attr('id', 'trend-line')
+                .attr("class", "chart-line")
+                .attr("stroke", "grey")
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 1.5)
+                .attr("pointer-events", "none");
 
+            trendLine.moveToBack();
+
+            let pccNumerator = (n * sumXY) - (sumX * sumY);
+            let pccDenominator = Math.sqrt(((n * sumXSquare) - (sumX * sumX)) * ((n * sumYSquare) - (sumY * sumY)));
+            let pcc = pccNumerator / pccDenominator;
+
+            document.getElementById("pcc-text").textContent = 'Pearson correlation coefficient (r): ' + pcc.toFixed(3);
+        } else {
+            document.getElementById("pcc-text").textContent = '';
+        }
     }
 
     function drawUpdatedChartLines(data, sortedDataX, sortedDataY) {
+
         plot.select("g#chart-lines").remove();
 
-        let lines = plot.append('g')
-            .attr('id', 'chart-lines');
+        if (chartLinesActive) {
+            let lines = plot.append('g')
+                .attr('id', 'chart-lines');
 
-        lines.append("path")
-            .datum(sortedDataX)
-            .attr("class", "chart-line")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("d", line)
-            .attr("pointer-events", "none");
+            lines.append("path")
+                .datum(sortedDataX)
+                .attr("class", "chart-line")
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 1.5)
+                .attr("d", line)
+                .attr("pointer-events", "none");
 
-        lines.moveToBack();
+            lines.moveToBack();
+        }
 
     }
 
     function drawUpdatedQuartiles(data, sortedDataX, sortedDataY) {
+        if (quartileActive) {
 
-        let medianXValue = xScale(getMedianValue(sortedDataX, true));
-        let lowExtremeXValue = xScale(sortedDataX[0].x);
-        let highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
+            let medianXValue = xScale(getMedianValue(sortedDataX, true));
+            let lowExtremeXValue = xScale(sortedDataX[0].x);
+            let highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
 
-        medianX.attr('transform', `translate(${medianXValue},${plotHeight})`);
-        lowExtremeX.attr('transform', `translate(${lowExtremeXValue},${plotHeight})`);
-        highExtremeX.attr('transform', `translate(${highExtremeXValue},${plotHeight})`);
+            medianX.attr('transform', `translate(${medianXValue},${plotHeight})`);
+            lowExtremeX.attr('transform', `translate(${lowExtremeXValue},${plotHeight})`);
+            highExtremeX.attr('transform', `translate(${highExtremeXValue},${plotHeight})`);
 
-        let lowerQuartileXValue = 0;
-        let upperQuartileXValue = 0;
-        if (data.length % 2 == 0) {
-            lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2 - 1), true));
-            upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
-            lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
-            upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+            let lowerQuartileXValue = 0;
+            let upperQuartileXValue = 0;
+            if (data.length % 2 == 0) {
+                lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2 - 1), true));
+                upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
+                lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
+                upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+            } else {
+                lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2), true));
+                upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
+                lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
+                upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+            }
+
+            let medianYValue = yScale(getMedianValue(sortedDataY, false));
+            let lowExtremeYValue = yScale(sortedDataY[0].y);
+            let highExtremeYValue = yScale(sortedDataY[sortedDataY.length - 1].y);
+
+            medianY.attr('transform', `translate(0,${medianYValue})`);
+            lowExtremeY.attr('transform', `translate(0,${lowExtremeYValue})`);
+            highExtremeY.attr('transform', `translate(0,${highExtremeYValue})`);
+
+            let lowerQuartileYValue = 0;
+            let upperQuartileYValue = 0;
+            if (data.length % 2 == 0) {
+                lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2 - 1), false));
+                upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
+                lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
+                upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
+            } else {
+                lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2), false));
+                upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
+                lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
+                upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
+            }
+
+            xQuartiles.moveToBack();
+            yQuartiles.moveToBack();
+
+            xQuartiles.attr('visibility', 'visible');
+            yQuartiles.attr('visibility', 'visible');
         } else {
-            lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2), true));
-            upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
-            lowerQuartileX.attr('transform', `translate(${lowerQuartileXValue},${plotHeight})`);
-            upperQuartileX.attr('transform', `translate(${upperQuartileXValue},${plotHeight})`);
+            xQuartiles.attr('visibility', 'hidden');
+            yQuartiles.attr('visibility', 'hidden');
         }
-
-        let medianYValue = yScale(getMedianValue(sortedDataY, false));
-        let lowExtremeYValue = yScale(sortedDataY[0].y);
-        let highExtremeYValue = yScale(sortedDataY[sortedDataY.length - 1].y);
-
-        medianY.attr('transform', `translate(0,${medianYValue})`);
-        lowExtremeY.attr('transform', `translate(0,${lowExtremeYValue})`);
-        highExtremeY.attr('transform', `translate(0,${highExtremeYValue})`);
-
-        let lowerQuartileYValue = 0;
-        let upperQuartileYValue = 0;
-        if (data.length % 2 == 0) {
-            lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2 - 1), false));
-            upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
-            lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
-            upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
-        } else {
-            lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2), false));
-            upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
-            lowerQuartileY.attr('transform', `translate(0,${lowerQuartileYValue})`);
-            upperQuartileY.attr('transform', `translate(0,${upperQuartileYValue})`);
-        }
-
-        xQuartiles.moveToBack();
-        yQuartiles.moveToBack();
-
     }
 
     function getMedianValue(data, isHorizontal) {
@@ -330,11 +356,27 @@
     }
 
     function setUpInputBar() {
+        trendLineActive = false;
         d3.select('#trend-line-checkbox')
+            .property('checked', trendLineActive)
             .on('change', function () {
                 trendLineActive = this.checked;
-                console.log('changed trend line active');
-                if (trendLineActive) drawUpdatedTrendLine();
+                drawSecondaryPlotElements(pointData);
+            });
+
+        chartLinesActive = false;
+        d3.select('#chart-lines-checkbox')
+            .property('checked', chartLinesActive)
+            .on('change', function () {
+                chartLinesActive = this.checked;
+                drawSecondaryPlotElements(pointData);
+            });
+        quartileActive = false;
+        d3.select('#quartile-checkbox')
+            .property('checked', quartileActive)
+            .on('change', function () {
+                quartileActive = this.checked;
+                drawSecondaryPlotElements(pointData);
             });
     }
 
