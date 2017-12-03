@@ -88,11 +88,11 @@
 
     function loadData(error, data) {
         if (error) throw error;
-        drawScatterPlot(data);
-        updateQuartiles(data);
+        drawUpdatedScatterPlot(data);
+        drawUpdatedQuartiles(data);
     }
 
-    function drawScatterPlot(data) {
+    function drawUpdatedScatterPlot(data) {
 
         let circles = plot.selectAll('circle.point');
 
@@ -104,6 +104,7 @@
             .attr('r', 5)
             .attr('cx', function (d) { return xScale(d.x); })
             .attr('cy', function (d) { return yScale(d.y); })
+            .call(d3.drag().on('drag', onPointDrag))
             .style('fill', function (d) {
                 return d.animal === 'cat' ? 'steelblue' : 'steelblue';
             });
@@ -113,7 +114,11 @@
         updatedCircles.exit().remove();
     }
 
-    function updateQuartiles(data) {
+    function onPointDrag(d) {
+        console.log("dragging");
+    }
+
+    function drawUpdatedQuartiles(data) {
         let sortedDataX = data.slice(0).sort(function (a, b) {
             return d3.ascending(a.x, b.x);
         });
