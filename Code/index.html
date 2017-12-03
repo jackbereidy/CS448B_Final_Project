@@ -12,12 +12,24 @@
 
 </html>
 
+<style>
+    path {
+        fill: none;
+        stroke: #aaa;
+    }
+</style>
+
 <script>
     let plotWidth = 500;
     let plotHeight = 500;
     let plotMargin = 100;
     let outerWidth = plotWidth + 2 * plotMargin;
     let outerHeight = plotHeight + 2 * plotMargin;
+
+    let chartMinX = 0;
+    let chartMaxX = 10;
+    let chartMinY = 0;
+    let chartMaxY = 10;
 
     let wholePlot = d3.select('body').append('svg')
         .attr('width', outerWidth)
@@ -29,10 +41,10 @@
         .attr('transform', `translate(${plotMargin},${plotMargin})`);
 
     let xScale = d3.scaleLinear()
-        .domain([0, 10])
+        .domain([chartMinX, chartMaxX])
         .range([0, plotWidth]);
     let yScale = d3.scaleLinear()
-        .domain([0, 10])
+        .domain([chartMinY, chartMaxY])
         .range([plotHeight, 0]);
 
     let xAxis = plot.append('g')
@@ -41,23 +53,27 @@
     let yAxis = plot.append('g')
         .call(d3.axisLeft(yScale));
 
-    let lowExtremeX = createQuartilePlotElement(true, true);
-    let highExtremeX = createQuartilePlotElement(true, true);
-    let lowerQuartileX = createQuartilePlotElement(true, false);
-    let upperQuartileX = createQuartilePlotElement(true, false);
-    let medianX = createQuartilePlotElement(true, false);
+    let xQuartiles = plot.append('g')
+        .attr('id', 'x-quartiles');
+    let yQuartiles = plot.append('g')
+        .attr('id', 'y-quartiles');
 
-    let lowExtremeY = createQuartilePlotElement(false, true);
-    let highExtremeY = createQuartilePlotElement(false, true);
-    let lowerQuartileY = createQuartilePlotElement(false, false);
-    let upperQuartileY = createQuartilePlotElement(false, false);
-    let medianY = createQuartilePlotElement(false, false);
+    let lowExtremeX = createQuartilePlotElement(xQuartiles, true, true);
+    let highExtremeX = createQuartilePlotElement(xQuartiles, true, true);
+    let lowerQuartileX = createQuartilePlotElement(xQuartiles, true, false);
+    let upperQuartileX = createQuartilePlotElement(xQuartiles, true, false);
+    let medianX = createQuartilePlotElement(xQuartiles, true, false);
+
+    let lowExtremeY = createQuartilePlotElement(yQuartiles, false, true);
+    let highExtremeY = createQuartilePlotElement(yQuartiles, false, true);
+    let lowerQuartileY = createQuartilePlotElement(yQuartiles, false, false);
+    let upperQuartileY = createQuartilePlotElement(yQuartiles, false, false);
+    let medianY = createQuartilePlotElement(yQuartiles, false, false);
 
     let pointData;
 
-
-    function createQuartilePlotElement(isHorizontal, isExtreme) {
-        let quartile = plot.append('g')
+    function createQuartilePlotElement(group, isHorizontal, isExtreme) {
+        let quartile = group.append('g')
             .attr('transform', `translate(0,${plotHeight})`)
             .attr('class', 'quartileElement');
         quartile.append('circle')
@@ -136,24 +152,33 @@
         drawUpdatedScatterPlot(pointData, sortedDataX, sortedDataY);
         drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
         drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
+        drawUpdatedChartLines(pointData, sortedDataX, sortedDataY);
     }
 
     function onPointDrag(d) {
         plot.select('#point-' + d.id)
             .attr('cy', function (d) {
-                if (yScale.invert(d3.event.y) >= 0) {
+                if (yScale.invert(d3.event.y) < chartMinY) {
+                    d.y = chartMinY;
+                    return yScale(chartMinY);
+                } else if (yScale.invert(d3.event.y) > chartMaxY) {
+                    d.y = chartMaxY;
+                    return yScale(chartMaxY);
+                } else {
                     d.y = yScale.invert(d3.event.y);
                     return d3.event.y;
-                } else {
-                    return d3.select(this).attr('cy');
                 }
             })
             .attr('cx', function (d) {
-                if (xScale.invert(d3.event.x) >= 0) {
+                if (xScale.invert(d3.event.x) < chartMinX) {
+                    d.x = chartMinX;
+                    return xScale(chartMinX);
+                } else if (xScale.invert(d3.event.x) > chartMaxX) {
+                    d.x = chartMaxX;
+                    return xScale(chartMaxX);
+                } else {
                     d.x = xScale.invert(d3.event.x);
                     return d3.event.x;
-                } else {
-                    return d3.select(this).attr('cx');
                 }
             })
         drawSecondaryPlotElements(pointData);
@@ -163,7 +188,26 @@
 
     }
 
+    var line = d3.line()
+        .x(function (d) { return xScale(d.x) })
+        .y(function (d) { return yScale(d.y) });
     function drawUpdatedChartLines(data, sortedDataX, sortedDataY) {
+        plot.select("g.chart-lines").remove();
+
+        let lines = plot.append('g')
+            .attr('class', 'chart-lines')
+            .attr('z-index', -1);
+
+        lines.append("path")
+            .datum(sortedDataX)
+            .attr("fill", "none")
+            .attr("class", "chart-line")
+            .attr("stroke", "steelblue")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 1.5)
+            .attr("d", line)
+            .attr("pointer-events", "none");
 
     }
 
