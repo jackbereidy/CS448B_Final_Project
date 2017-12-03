@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <script src='https://d3js.org/d3.v4.min.js'></script>
 </head>
 
@@ -24,6 +25,7 @@
         .attr('id', 'whole-chart');
 
     let plot = wholePlot.append('g')
+        .attr('id', 'plot')
         .attr('transform', `translate(${plotMargin},${plotMargin})`);
 
     let xScale = d3.scaleLinear()
@@ -50,6 +52,8 @@
     let lowerQuartileY = createQuartilePlotElement(false, false);
     let upperQuartileY = createQuartilePlotElement(false, false);
     let medianY = createQuartilePlotElement(false, false);
+
+    let pointData;
 
 
     function createQuartilePlotElement(isHorizontal, isExtreme) {
@@ -88,8 +92,9 @@
 
     function loadData(error, data) {
         if (error) throw error;
-        drawUpdatedScatterPlot(data);
-        drawUpdatedQuartiles(data);
+        pointData = data;
+
+        drawSecondaryPlotElements(pointData);
     }
 
     function drawUpdatedScatterPlot(data) {
@@ -100,31 +105,69 @@
 
         let enterSelection = updatedCircles.enter();
         let newCircles = enterSelection.append('circle')
+            .attr('id', function (d) { return 'point-' + d.id; })
             .attr('class', 'point')
             .attr('r', 5)
             .attr('cx', function (d) { return xScale(d.x); })
             .attr('cy', function (d) { return yScale(d.y); })
-            .call(d3.drag().on('drag', onPointDrag))
             .style('fill', function (d) {
                 return d.animal === 'cat' ? 'steelblue' : 'steelblue';
-            });
+            })
+            .call(d3.drag()
+                .subject(function () {
+                    var t = d3.select(this);
+                    return { x: t.attr('cx'), y: t.attr('cy') };
+                })
+                .on('start', onPointDrag)
+                .on('drag', onPointDrag));
 
         let unselectedCircles = updatedCircles.exit();
 
         updatedCircles.exit().remove();
     }
 
-    function onPointDrag(d) {
-        console.log("dragging");
-    }
-
-    function drawUpdatedQuartiles(data) {
-        let sortedDataX = data.slice(0).sort(function (a, b) {
+    function drawSecondaryPlotElements(pointData) {
+        let sortedDataX = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.x, b.x);
         });
-        let sortedDataY = data.slice(0).sort(function (a, b) {
+        let sortedDataY = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.y, b.y);
         });
+        drawUpdatedScatterPlot(pointData, sortedDataX, sortedDataY);
+        drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
+        drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
+    }
+
+    function onPointDrag(d) {
+        plot.select('#point-' + d.id)
+            .attr('cy', function (d) {
+                if (yScale.invert(d3.event.y) >= 0) {
+                    d.y = yScale.invert(d3.event.y);
+                    return d3.event.y;
+                } else {
+                    return d3.select(this).attr('cy');
+                }
+            })
+            .attr('cx', function (d) {
+                if (xScale.invert(d3.event.x) >= 0) {
+                    d.x = xScale.invert(d3.event.x);
+                    return d3.event.x;
+                } else {
+                    return d3.select(this).attr('cx');
+                }
+            })
+        drawSecondaryPlotElements(pointData);
+    }
+
+    function drawUpdatedTrendLine(data, sortedDataX, sortedDataY) {
+
+    }
+
+    function drawUpdatedChartLines(data, sortedDataX, sortedDataY) {
+
+    }
+
+    function drawUpdatedQuartiles(data, sortedDataX, sortedDataY) {
 
         let medianXValue = xScale(getMedianValue(sortedDataX, true));
         let lowExtremeXValue = xScale(sortedDataX[0].x);
