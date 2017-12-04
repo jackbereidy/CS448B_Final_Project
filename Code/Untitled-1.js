@@ -1,159 +1,3 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <script src='https://d3js.org/d3.v4.min.js'></script>
-</head>
-
-<body>
-    <div id="content-wrapper">
-        <div id="plot-container">
-            <!-- svg plot here -->
-        </div>
-        <div id="tool-bar">
-            <div>Trend Line
-                <input id='trend-line-checkbox' type='checkbox'>
-                <span id='pcc-text'></span>
-            </div>
-            <div>Chart Lines
-                <input id='chart-lines-checkbox' type='checkbox'>
-            </div>
-            <div> Quartile
-                <input id='quartile-checkbox' type='checkbox'>
-                <select id='quartile-mode'>
-                    <option selected value="0">Minimal</option>
-                    <option value="1">Box and whisker X</option>
-                    <option value="2">Box and whisker Y</option>
-                    <option value="3">Box and whisker X &amp Y</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html>
-
-<style>
-    body {
-        font-family: "sans-serif";
-        background-color: #f8f8f8;
-    }
-
-    #content-wrapper {
-        text-align: center;
-    }
-
-    #plot-container {
-        display: inline-block;
-        padding: 25px;
-        margin-top: 15px;
-        background-color: #fff;
-    }
-
-    #tool-bar {
-        text-align: left;
-    }
-
-    path {
-        fill: none;
-        stroke: #000;
-    }
-
-    .point {
-        fill: #4682b4;
-        stroke: #12548A;
-        stroke-width: 2.0;
-    }
-    .uneditable-point {
-        fill: #787878;
-        stroke: #494949;
-    }
-    .editable-point {
-        fill: #4682b4;
-        stroke: #12548A;
-        cursor: pointer;
-    }
-
-    .chart-line {
-        stroke: #aac6dc;
-        stroke-width: 1.5;
-        pointer-events: none;
-    }
-
-    .trend-line {
-        stroke-dasharray: 5 5;
-        stroke: #777;
-        stroke-width: 1.5;
-        pointer-events: none;
-    }
-
-    .text-rect {
-        fill: #ffffffe1;
-        -webkit-filter: drop-shadow(0px 2px 1.1px rgba(0, 0, 0, 0.25));
-        filter: drop-shadow(0px 2px 1.1px rgba(0, 0, 0, 0.25));
-        pointer-events: none;
-    }
-
-    .point-value-text {
-        fill: #000;
-        font-family: sans-serif;
-        pointer-events: none;
-    }
-
-    .quartile-minimal {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1.5;
-        pointer-events: none;
-    }
-
-    .quartile-line {
-        stroke-width: 1.5;
-        stroke: #000;
-    }
-
-    .quartile-line-median {
-        stroke: #000;
-    }
-
-    .axis {
-        stroke-width: 1.5;
-        font-size: 0.7em;
-        pointer-events: none;
-    }
-
-    .point-text {
-        font-size: 10px;
-        font-family: sans-serif;
-        pointer-events: none;
-    }
-
-    .quartile-box {
-        fill: #eee;
-        stroke-width: 1.5;
-        stroke: #000;
-        pointer-events: none;
-    }
-</style>
-
-<script>
-
-
-    console.log(window.location.href);
-    let url = new URL(window.location.href);
-    let quizID = url.searchParams.get('quizid');
-    if (quizID) {
-        console.log(quizID);
-    } else {
-        console.log('no quiz id');
-    }
-    let pageIndex = url.searchParams.get('pageindex');
-    if (pageIndex) {
-        console.log(pageIndex);
-    } else {
-        console.log('no quiz id');
-    }
 
     let plotWidth = 500;
     let plotHeight = 500;
@@ -315,10 +159,10 @@
     function parseInputRow(d) {
         return {
             id: +d.id,
-            isEditable: +d.isEditable == 1,
-            x: +d.x,
-            y: +d.y,
-            isSolution: +d.isSolution == 1
+            animal: d.animal,
+            x: +d.weight,
+            y: +d.height,
+            name: d.name
         };
     }
 
@@ -339,9 +183,9 @@
         let enterSelection = updatedCircles.enter();
         let newCircles = enterSelection.append('g')
             .attr('id', function (d) { return 'point-group-' + d.id; })
-            .attr('class', function (d) { return 'point-group ' + ((d.isEditable) ? 'editable-point-group' : 'uneditable-point-group') });
+            .attr('class', 'point-group');
         newCircles.append('circle')
-            .attr('class', function (d) { return 'point ' + ((d.isEditable) ? 'editable-point' : 'uneditable-point') })
+            .attr('class', 'point')
             .attr('r', 5)
             .attr('cx', function (d) { return xScale(d.x); })
             .attr('cy', function (d) { return yScale(d.y); })
@@ -353,13 +197,11 @@
                 .on('start', onPointDrag)
                 .on('drag', onPointDrag)
                 .on('end', function (d) { updatePointInfoVisibility(d, false); }))
-            .on('mouseover', function (d) { 
-                plot.select('#point-group-' + d.id).moveToFront();
-                updatePointInfoVisibility(d, true); 
-            })
+            .on('mouseover', function (d) { updatePointInfoVisibility(d, true); })
             .on('mouseout', function (d) { updatePointInfoVisibility(d, false); });
 
         let text = newCircles.append('text')
+            .attr('class', 'x-text')
             .attr('class', 'point-value-text')
             .attr('x', function (d) { return xScale(d.x); })
             .attr('y', function (d) { return yScale(d.y) - 15; })
@@ -419,38 +261,36 @@
     }
     function onPointDrag(d) {
         let pointGroup = plot.select('#point-group-' + d.id);
-        if (pointGroup.classed("editable-point-group")) {
-            pointGroup.moveToFront();
-            let dragPoint = pointGroup.select('.point');
-            dragPoint.attr('cy',
-                function (d) {
-                    if (yScale.invert(d3.event.y) < chartMinY) {
-                        d.y = chartMinY;
-                        return yScale(chartMinY);
-                    } else if (yScale.invert(d3.event.y) > chartMaxY) {
-                        d.y = chartMaxY;
-                        return yScale(chartMaxY);
-                    } else {
-                        d.y = yScale.invert(d3.event.y);
-                        return d3.event.y;
-                    }
-                })
-                .attr('cx', function (d) {
-                    if (xScale.invert(d3.event.x) < chartMinX) {
-                        d.x = chartMinX;
-                        return xScale(chartMinX);
-                    } else if (xScale.invert(d3.event.x) > chartMaxX) {
-                        d.x = chartMaxX;
-                        return xScale(chartMaxX);
-                    } else {
-                        d.x = xScale.invert(d3.event.x);
-                        return d3.event.x;
-                    }
-                })
-            updatePointInfoVisibility(d, true);
-            drawSecondaryPlotElements(pointData);
-        }
+        pointGroup.moveToFront();
+        let dragPoint = pointGroup.select('.point');
+        dragPoint.attr('cy',
+            function (d) {
+                if (yScale.invert(d3.event.y) < chartMinY) {
+                    d.y = chartMinY;
+                    return yScale(chartMinY);
+                } else if (yScale.invert(d3.event.y) > chartMaxY) {
+                    d.y = chartMaxY;
+                    return yScale(chartMaxY);
+                } else {
+                    d.y = yScale.invert(d3.event.y);
+                    return d3.event.y;
+                }
+            })
+            .attr('cx', function (d) {
+                if (xScale.invert(d3.event.x) < chartMinX) {
+                    d.x = chartMinX;
+                    return xScale(chartMinX);
+                } else if (xScale.invert(d3.event.x) > chartMaxX) {
+                    d.x = chartMaxX;
+                    return xScale(chartMaxX);
+                } else {
+                    d.x = xScale.invert(d3.event.x);
+                    return d3.event.x;
+                }
+            })
+        updatePointInfoVisibility(d, true);
 
+        drawSecondaryPlotElements(pointData);
     }
     function getPointValueText(d) {
         let string = d.x.toFixed(2) + ", " + d.y.toFixed(2);
@@ -745,5 +585,3 @@
             this.parentNode.appendChild(this);
         });
     };
-
-</script>
