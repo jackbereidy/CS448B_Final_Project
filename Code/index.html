@@ -18,8 +18,9 @@
         <input id='quartile-checkbox' type='checkbox'>
         <select id='quartile-mode'>
             <option selected value="0">Minimal</option>
-            <option value="1">Box and whisker</option>
-            <option value="2">In graph</option>
+            <option value="1">Box and whisker X</option>
+            <option value="2">Box and whisker Y</option>
+            <option value="3">Box and whisker X &amp Y</option>
         </select>
     </div>
 </body>
@@ -33,7 +34,15 @@
     }
 
     .chart-line {
-        stroke: #aaa;
+        stroke: #ccc;
+        stroke-width: 1.5;
+        pointer-events: none;
+    }
+    .trend-line {
+        stroke-dasharray: 5 5;
+        stroke: #777;
+        stroke-width: 1.5;
+        pointer-events: none;
     }
 
     .quartile-minimal {
@@ -59,7 +68,8 @@
 
     .quartile-box {
         fill: #eee;
-        stroke-width: 0;
+        stroke-width: 1.5;
+        stroke: #000;
         pointer-events: none;
     }
 </style>
@@ -156,6 +166,12 @@
         .attr('class', 'quartile-line')
         .attr('y1', '0')
         .attr('y2', '0');
+
+    let boxAndWhiskerLineY = lowExtremeY.append('line')
+        .attr('id', 'box-and-whisker-line-y')
+        .attr('class', 'quartile-line')
+        .attr('x1', '0')
+        .attr('x2', '0');
 
     let xBox1 = d3.select('#x-box-1');
     let xBox2 = d3.select('#x-box-2');
@@ -331,14 +347,8 @@
                 .attr('y1', yScale(sortedDataX[0].x * b + a))
                 .attr('x2', xScale(sortedDataX[sortedDataX.length - 1].x))
                 .attr('y2', yScale(sortedDataX[sortedDataX.length - 1].x * b + a))
-                .attr("fill", "none")
                 .attr('id', 'trend-line')
-                .attr("class", "chart-line")
-                .attr("stroke", "grey")
-                .attr("stroke-linejoin", "round")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-width", 1.5)
-                .attr("pointer-events", "none");
+                .attr('class', 'trend-line');
 
             trendLine.moveToBack();
 
@@ -363,11 +373,7 @@
             lines.append("path")
                 .datum(sortedDataX)
                 .attr("class", "chart-line")
-                .attr("stroke-linejoin", "round")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-width", 1.5)
-                .attr("d", line)
-                .attr("pointer-events", "none");
+                .attr("d", line);
 
             lines.moveToBack();
         }
@@ -379,13 +385,26 @@
             xQuartiles.attr('visibility', 'visible');
             yQuartiles.attr('visibility', 'visible');
             switch (currentQuartileMode) {
-                case 2:
-                    xAxis.attr('visibility', 'visible');
-                    yAxis.attr('visibility', 'visible');
-                case 1:
+                case 3:
                     xAxis.attr('visibility', 'visible');
                     yAxis.attr('visibility', 'visible');
                     yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
+                    xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
+                    yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    xQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    break;
+                case 2:
+                    xAxis.attr('visibility', 'visible');
+                    yAxis.attr('visibility', 'visible');
+                    yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
+                    xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
+                    yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    xQuartiles.select('.minimalElements').attr('visibility', 'hidden');
+                    break;
+                case 1:
+                    xAxis.attr('visibility', 'visible');
+                    yAxis.attr('visibility', 'visible');
+                    yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
                     xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
                     yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
                     xQuartiles.select('.minimalElements').attr('visibility', 'hidden');
@@ -508,6 +527,9 @@
 
             yBox1.attr('width', lowerQuartileYValue - medianYValue);
             yBox2.attr('width', medianYValue - upperQuartileYValue);
+
+            boxAndWhiskerLineY.attr('y1', 0)
+                .attr('y2', highExtremeYValue - lowExtremeYValue);
 
             xQuartiles.moveToBack();
             yQuartiles.moveToBack();
