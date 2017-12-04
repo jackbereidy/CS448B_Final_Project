@@ -34,8 +34,8 @@
 
     .quartile-minimal {
         fill: none;
-        stroke: grey;
-        stroke-width: 1.5;
+        stroke: #000;
+        stroke-width: 1.0;
         pointer-events: none;
     }
 </style>
@@ -73,8 +73,10 @@
 
     let xAxis = plot.append('g')
         .attr('transform', `translate(0,${plotHeight})`)
+        .attr('id', 'x-axis')
         .call(d3.axisBottom(xScale));
     let yAxis = plot.append('g')
+        .attr('id', 'y-axis')
         .call(d3.axisLeft(yScale));
 
     let xQuartiles = plot.append('g')
@@ -333,10 +335,11 @@
             yQuartiles.attr('visibility', 'visible');
             switch (currentQuartileMode) {
                 case 2:
-                    console.log('in graph to be implemented')
-
+                    xAxis.attr('visibility', 'visible');
+                    yAxis.attr('visibility', 'visible');
                 case 1:
-                    console.log('box and whisker mode active');
+                    xAxis.attr('visibility', 'visible');
+                    yAxis.attr('visibility', 'visible');
                     yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
                     xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'visible');
                     yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
@@ -344,13 +347,16 @@
                     break;
                 case 0:
                 default:
-                    console.log('minimal mode active');
+                    xAxis.attr('visibility', 'hidden');
+                    yAxis.attr('visibility', 'hidden');
                     yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
                     xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
                     yQuartiles.select('.minimalElements').attr('visibility', 'visible');
                     xQuartiles.select('.minimalElements').attr('visibility', 'visible');
             }
         } else {
+            xAxis.attr('visibility', 'visible');
+            yAxis.attr('visibility', 'visible');
             xQuartiles.attr('visibility', 'hidden');
             yQuartiles.attr('visibility', 'hidden');
             yQuartiles.select('.minimalElements').attr('visibility', 'hidden');
@@ -440,9 +446,9 @@
                 .attr('x2', xScale(0) + 5);
             minimalElementsY.select('line.line-2')
                 .attr('y1', medianYValue - 5)
-                .attr('x1', xScale(0) + 6)
+                .attr('x1', xScale(0) + 5)
                 .attr('y2', upperQuartileYValue)
-                .attr('x2', xScale(0) + 6);
+                .attr('x2', xScale(0) + 5);
             minimalElementsY.select('line.line-3')
                 .attr('y1', upperQuartileYValue)
                 .attr('x1', xScale(0) + 1)
