@@ -3,13 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src='https://d3js.org/d3.v4.min.js'></script>
+    <script src='d3.v4.min.js'></script>
 </head>
 
 <body>
     <div id="content-wrapper">
-        <div id="plot-container">
+        <div id="content">
             <!-- svg plot here -->
+            <div id="plot-container" class="content-card"></div>
+            <div id="message-container" class=" content-card"></div>
         </div>
         <div id="tool-bar">
             <div>Trend Line
@@ -37,18 +39,30 @@
 <style>
     body {
         font-family: "sans-serif";
-        background-color: #f8f8f8;
+        background-color: #f1f1f1;
     }
-
+    .content-card {
+        display: inline-block;
+        background-color: #fff;
+    }
     #content-wrapper {
         text-align: center;
     }
 
+    #content {
+        margin-top: 20px;
+    }
+
     #plot-container {
-        display: inline-block;
-        padding: 25px;
-        margin-top: 15px;
-        background-color: #fff;
+        border-radius: 5px 0px 0px 5px;
+        margin-right:-4px;
+        max-height: 700px;
+    }
+
+    #message-container {
+        border-radius: 0px 5px 5px 0px;
+        width: 400px;
+        height: 700px;
     }
 
     #tool-bar {
@@ -65,10 +79,12 @@
         stroke: #12548A;
         stroke-width: 2.0;
     }
+
     .uneditable-point {
         fill: #787878;
         stroke: #494949;
     }
+
     .editable-point {
         fill: #4682b4;
         stroke: #12548A;
@@ -152,7 +168,7 @@
     if (pageIndex) {
         console.log(pageIndex);
     } else {
-        console.log('no quiz id');
+        console.log('no page id');
     }
 
     let plotWidth = 500;
@@ -353,9 +369,9 @@
                 .on('start', onPointDrag)
                 .on('drag', onPointDrag)
                 .on('end', function (d) { updatePointInfoVisibility(d, false); }))
-            .on('mouseover', function (d) { 
+            .on('mouseover', function (d) {
                 plot.select('#point-group-' + d.id).moveToFront();
-                updatePointInfoVisibility(d, true); 
+                updatePointInfoVisibility(d, true);
             })
             .on('mouseout', function (d) { updatePointInfoVisibility(d, false); });
 
