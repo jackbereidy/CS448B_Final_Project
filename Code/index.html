@@ -4,15 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <script src='d3.v4.min.js'></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
 </head>
 
 <body>
     <div id="content-wrapper">
-        <div id="content">
-            <!-- svg plot here -->
-            <div id="plot-container" class="content-card"></div>
-            <div id="message-container" class=" content-card"></div>
-        </div>
         <div id="tool-bar">
             <div>Trend Line
                 <input id='trend-line-checkbox' type='checkbox'>
@@ -31,6 +27,23 @@
                 </select>
             </div>
         </div>
+        <div id="content">
+            <!-- svg plot here -->
+            <div id="plot-container" class="content-card"></div>
+            <div id="message-container" class=" content-card"></div>
+        </div>
+
+        <div id="footer">
+            <span>JACK REIDY</span>
+            <span>GITHUB</span>
+            <span>
+                <a href="https://github.com/jackbereidy/CS448B_Final_Project">GITHUB</a>
+            </span>
+            
+            <span>
+                <a href="https://magrawala.github.io/cs448b-fa17/">CS 448B</a>
+            </span>
+        </div>
     </div>
 </body>
 
@@ -38,13 +51,15 @@
 
 <style>
     body {
-        font-family: "sans-serif";
+        font-family: 'Roboto', sans-serif;
         background-color: #f1f1f1;
     }
+
     .content-card {
         display: inline-block;
         background-color: #fff;
     }
+
     #content-wrapper {
         text-align: center;
     }
@@ -55,7 +70,7 @@
 
     #plot-container {
         border-radius: 5px 0px 0px 5px;
-        margin-right:-4px;
+        margin-right: -4px;
         max-height: 700px;
     }
 
@@ -67,6 +82,10 @@
 
     #tool-bar {
         text-align: left;
+    }
+
+    #footer {
+        margin-top: 15px;
     }
 
     path {
