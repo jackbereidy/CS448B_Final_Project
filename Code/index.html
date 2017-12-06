@@ -920,7 +920,7 @@
     }
 
     function checkAnswer() {
-        let circles = points.selectAll('circle.point');
+        let circles = points.selectAll('g.point-group');
         let updatedCircles = circles.data(pointData, d => d.id);
         let enterSelection = updatedCircles.enter();
         circles.each(function (d) {
@@ -931,9 +931,11 @@
                     answerButton.text("Correct!")
                         .attr("class", "button button-check inactive");
                     nextButton.attr("class", "button green");
+                    d3.select('#point-group-' + d.id).attr('class', 'point-group uneditable-point-group');
                 } else {
                     answerButton.text("Check Answer Again");
                 }
+                
             }
         });
 
