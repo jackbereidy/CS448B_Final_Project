@@ -5,42 +5,71 @@
     <meta charset="UTF-8">
     <script src='d3.v4.min.js'></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+    <script src="https://use.fontawesome.com/b0f0c8766a.js"></script>
+    <link rel="icon" href="favicon-smile-o.ico">
 </head>
 
 <body>
     <div id="content-wrapper">
-        <div id="tool-bar">
-            <div>Trend Line
-                <input id='trend-line-checkbox' type='checkbox'>
-                <span id='pcc-text'></span>
-            </div>
-            <div>Chart Lines
-                <input id='chart-lines-checkbox' type='checkbox'>
-            </div>
-            <div> Quartile
-                <input id='quartile-checkbox' type='checkbox'>
-                <select id='quartile-mode'>
-                    <option selected value="0">Minimal</option>
-                    <option value="1">Box and whisker X</option>
-                    <option value="2">Box and whisker Y</option>
-                    <option value="3">Box and whisker X &amp Y</option>
-                </select>
-            </div>
-        </div>
         <div id="content">
             <!-- svg plot here -->
-            <div id="plot-container" class="content-card"></div>
-            <div id="message-container" class=" content-card"></div>
+            <div id="plot-container" class="content-card">
+                <div id="tool-bar">
+                    <span>Trend Line
+                        <input id='trend-line-checkbox' type='checkbox'>
+                        <span id='pcc-text'></span>
+                    </span>
+                    <span>Chart Lines
+                        <input id='chart-lines-checkbox' type='checkbox'>
+                    </span>
+                    <span> Quartile
+                        <input id='quartile-checkbox' type='checkbox'>
+                        <select id='quartile-mode'>
+                            <option id="quartile-mode-0" value="0">Minimal</option>
+                            <option id="quartile-mode-1" value="1">Box and whisker X</option>
+                            <option id="quartile-mode-2" value="2">Box and whisker Y</option>
+                            <option id="quartile-mode-3" value="3">Box and whisker X &amp Y</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+            <div id="message-container" class=" content-card">
+                <div id="message-body">
+                    <p id="message-text">
+                        <span id="message-header">
+                            Box-and-whisker plot quiz
+                        </span>
+                        <br>
+                        <br> Move the
+                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
+                        <br>
+                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
+                        remember that this is because this box-and-whisker plot represents the distribution of y values.
+                        <br>
+                        <br>When you think you have found a valid position, check your answer to unlock the next question.
+                    </p>
+                </div>
+                <div id="navigation-bar">
+                    <button id="check-answer-button" class="button button-check grey">
+                        Check Answer
+                    </button>
+                    <button id="next-button" class="button green inactive">
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+            </div>
+
         </div>
 
         <div id="footer">
-            <span>JACK REIDY</span>
-            <span>GITHUB</span>
-            <span>
+            <span class="footer-element">
+                <a href="mailto:jackbreidy@gmail.com">JACK REIDY</a>
+            </span>
+            <span class="footer-element">
                 <a href="https://github.com/jackbereidy/CS448B_Final_Project">GITHUB</a>
             </span>
-            
-            <span>
+            <span class="footer-element">
                 <a href="https://magrawala.github.io/cs448b-fa17/">CS 448B</a>
             </span>
         </div>
@@ -56,8 +85,12 @@
     }
 
     .content-card {
+        overflow: hidden;
         display: inline-block;
         background-color: #fff;
+        /* -webkit-box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.75);
+        box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.75); */
     }
 
     #content-wrapper {
@@ -78,14 +111,108 @@
         border-radius: 0px 5px 5px 0px;
         width: 400px;
         height: 700px;
+        position: relative;
     }
 
-    #tool-bar {
+    #message-body {
+        margin-top: 50px;
+        margin-left: 15px;
         text-align: left;
     }
 
+    #message-header {
+        font-weight: 500;
+        font-size: 1.5em;
+    }
+
+    #message-text {
+        overflow-y: auto;
+        padding-right: 35px;
+        max-height: 535px;
+    }
+
+    #navigation-bar {
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 50px;
+        width: 100%;
+    }
+
+    #tool-bar {
+        position: absolute;
+        margin-left: 45px;
+        margin-top: 50px;
+    }
+
     #footer {
-        margin-top: 15px;
+        margin-top: 35px;
+        font-weight: 500;
+        font-size: 0.9em;
+        text-decoration: none;
+        color: #494949;
+    }
+
+    #footer a:link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    #footer a:visited {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    #footer .footer-element {
+        margin: 15px;
+    }
+
+    .button {
+        background-color: #494949;
+        display: inline-block;
+        text-align: center;
+        color: #fff;
+        padding: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-decoration: none;
+        font-size: 1.0em;
+        margin: 5px;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        border: none;
+        pointer-events: visible;
+        cursor: pointer;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 5px;
+        font-weight: 300;
+        outline: none;
+    }
+
+    .button:hover {
+        filter: brightness(85%);
+    }
+
+    .button-check {
+        width: 70%;
+    }
+
+
+    .button-next-hover {
+        filter: brightness(85%);
+    }
+
+    .grey {
+        background-color: #494949;
+    }
+
+    .green {
+        background-color: #43C477;
+    }
+
+    .inactive {
+        pointer-events: none;
+        background-color: #ACACAC;
+        color: #fff;
     }
 
     path {
@@ -293,8 +420,6 @@
     let yBox1 = d3.select('#y-box-1');
     let yBox2 = d3.select('#y-box-2');
 
-
-
     let currentQuartileMode = 0;
 
     let pointData;
@@ -345,7 +470,7 @@
         return boxAndWhisker;
     }
 
-    d3.csv('animals.csv', parseInputRow, loadData);
+    d3.csv('8_points.csv', parseInputRow, loadData);
 
     function parseInputRow(d) {
         return {
@@ -353,21 +478,22 @@
             isEditable: +d.isEditable == 1,
             x: +d.x,
             y: +d.y,
-            isSolution: +d.isSolution == 1
+            isSolution: +d.isSolution == 1,
         };
     }
 
     function loadData(error, data) {
         if (error) throw error;
         pointData = data;
+        setUpState();
         drawUpdatedScatterPlot(pointData);
         drawSecondaryPlotElements(pointData);
-        setUpInputBar();
+
     }
 
     function drawUpdatedScatterPlot(data) {
 
-        let circles = points.selectAll('circle.point');
+        let circles = points.selectAll('g.point-group');
 
         let updatedCircles = circles.data(data, d => d.id);
 
@@ -530,7 +656,7 @@
             let pccDenominator = Math.sqrt(((n * sumXSquare) - (sumX * sumX)) * ((n * sumYSquare) - (sumY * sumY)));
             let pcc = pccNumerator / pccDenominator;
 
-            document.getElementById("pcc-text").textContent = 'Pearson correlation coefficient (r): ' + pcc.toFixed(3);
+            // document.getElementById("pcc-text").textContent = 'Pearson correlation coefficient (r): ' + pcc.toFixed(3);
         } else {
             document.getElementById("pcc-text").textContent = '';
         }
@@ -604,19 +730,29 @@
         }
 
     }
+    let lowerQuartileYValue = 0;
+    let upperQuartileYValue = 0;
+    let medianYValue = 0;
+    let lowExtremeYValue = 0;
+    let highExtremeYValue = 0;
 
+    let lowerQuartileXValue = 0;
+    let upperQuartileXValue = 0;
+    let medianXValue = 0;
+    let lowExtremeXValue = 0;
+    let highExtremeXValue = 0;
     function drawUpdatedQuartiles(data, sortedDataX, sortedDataY) {
         if (quartileActive) {
-            let medianXValue = xScale(getMedianValue(sortedDataX, true));
-            let lowExtremeXValue = xScale(sortedDataX[0].x);
-            let highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
+            medianXValue = xScale(getMedianValue(sortedDataX, true));
+            lowExtremeXValue = xScale(sortedDataX[0].x);
+            highExtremeXValue = xScale(sortedDataX[sortedDataX.length - 1].x);
 
             medianX.attr('transform', `translate(${medianXValue},${plotHeight})`);
             lowExtremeX.attr('transform', `translate(${lowExtremeXValue},${plotHeight})`);
             highExtremeX.attr('transform', `translate(${highExtremeXValue},${plotHeight})`);
 
-            let lowerQuartileXValue = 0;
-            let upperQuartileXValue = 0;
+            lowerQuartileXValue = 0;
+            upperQuartileXValue = 0;
             if (data.length % 2 == 0) {
                 lowerQuartileXValue = xScale(getMedianValue(sortedDataX.slice(0, sortedDataX.length / 2 - 1), true));
                 upperQuartileXValue = xScale(getMedianValue(sortedDataX.slice(sortedDataX.length / 2 + 1, sortedDataX.length), true));
@@ -656,16 +792,16 @@
             boxAndWhiskerLineX.attr('x1', 0)
                 .attr('x2', highExtremeXValue - lowExtremeXValue);
 
-            let medianYValue = yScale(getMedianValue(sortedDataY, false));
-            let lowExtremeYValue = yScale(sortedDataY[0].y);
-            let highExtremeYValue = yScale(sortedDataY[sortedDataY.length - 1].y);
+            medianYValue = yScale(getMedianValue(sortedDataY, false));
+            lowExtremeYValue = yScale(sortedDataY[0].y);
+            highExtremeYValue = yScale(sortedDataY[sortedDataY.length - 1].y);
 
             medianY.attr('transform', `translate(0,${medianYValue})`);
             lowExtremeY.attr('transform', `translate(0,${lowExtremeYValue})`);
             highExtremeY.attr('transform', `translate(0,${highExtremeYValue})`);
 
-            let lowerQuartileYValue = 0;
-            let upperQuartileYValue = 0;
+            lowerQuartileYValue = 0;
+            upperQuartileYValue = 0;
             if (data.length % 2 == 0) {
                 lowerQuartileYValue = yScale(getMedianValue(sortedDataY.slice(0, sortedDataY.length / 2 - 1), false));
                 upperQuartileYValue = yScale(getMedianValue(sortedDataY.slice(sortedDataY.length / 2 + 1, sortedDataY.length), false));
@@ -730,25 +866,39 @@
         }
     }
 
-    function setUpInputBar() {
+    function setUpState() {
         trendLineActive = false;
+        quartileActive = true;
+        chartLinesActive = false;
+        selectBox = document.getElementById('quartile-mode');
+        currentQuartileMode = 2;
+        selectBox.value = currentQuartileMode;
+        setUpInput();
+    }
+
+    let answerButton;
+    let nextButton;
+    function setUpInput() {
+        answerButton = d3.select('#check-answer-button')
+            .on('click', function () {
+                checkAnswer();
+            })
+        nextButton = d3.select('#next-button')
+            .on('click', function () {
+                location.reload();
+            })
         d3.select('#trend-line-checkbox')
             .property('checked', trendLineActive)
             .on('change', function () {
                 trendLineActive = this.checked;
                 drawSecondaryPlotElements(pointData);
             });
-
-        chartLinesActive = false;
         d3.select('#chart-lines-checkbox')
             .property('checked', chartLinesActive)
             .on('change', function () {
                 chartLinesActive = this.checked;
                 drawSecondaryPlotElements(pointData);
             });
-        quartileActive = false;
-        updateQuartileVisibility();
-        selectBox = document.getElementById('quartile-mode');
         d3.select('#quartile-checkbox')
             .property('checked', quartileActive)
             .on('change', function () {
@@ -764,6 +914,29 @@
                     updateQuartileVisibility();
                 }
             });
+
+        updateQuartileVisibility();
+
+    }
+
+    function checkAnswer() {
+        let circles = points.selectAll('circle.point');
+        let updatedCircles = circles.data(pointData, d => d.id);
+        let enterSelection = updatedCircles.enter();
+        circles.each(function (d) {
+            if (d.isSolution) {
+                console.log("solution point with id: " + d.id + " and y value: " + d.y);
+                if (+d.y >= yScale.invert(lowerQuartileYValue) && +d.y <= yScale.invert(medianYValue)) {
+                    console.log("yay correct answer!");
+                    answerButton.text("Correct!")
+                        .attr("class", "button button-check inactive");
+                    nextButton.attr("class", "button green");
+                } else {
+                    answerButton.text("Check Answer Again");
+                }
+            }
+        });
+
     }
 
     // moveToBack(), moveToFront() attribution: http://blockbuilder.org/eesur/4e0a69d57d3bfc8a82c2
