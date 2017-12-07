@@ -15,14 +15,14 @@
             <!-- svg plot here -->
             <div id="plot-container" class="content-card">
                 <div id="tool-bar">
-                    <span>Trend Line
+                    <span class="tool-bar-item">Trend Line
                         <input id='trend-line-checkbox' type='checkbox'>
                         <span id='pcc-text'></span>
                     </span>
-                    <span>Chart Lines
+                    <span class="tool-bar-item">Chart Lines
                         <input id='chart-lines-checkbox' type='checkbox'>
                     </span>
-                    <span> Quartile
+                    <span class="tool-bar-item"> Quartile
                         <input id='quartile-checkbox' type='checkbox'>
                         <select id='quartile-mode'>
                             <option id="quartile-mode-0" value="0">Minimal</option>
@@ -82,6 +82,10 @@
     body {
         font-family: 'Roboto', sans-serif;
         background-color: #f1f1f1;
+    }
+
+    .tool-bar-item {
+        margin-right: 25px;
     }
 
     .content-card {
@@ -234,6 +238,12 @@
     .editable-point {
         fill: #4682b4;
         stroke: #12548A;
+        cursor: pointer;
+    }
+
+    .correct-point {
+        fill: #58b446;
+        stroke: rgb(18, 138, 24);
         cursor: pointer;
     }
 
@@ -931,7 +941,9 @@
                     answerButton.text("Correct!")
                         .attr("class", "button button-check inactive");
                     nextButton.attr("class", "button green");
-                    d3.select('#point-group-' + d.id).attr('class', 'point-group uneditable-point-group');
+                    d3.select('#point-group-' + d.id).attr('class', 'point-group uneditable-point-group')
+                        .select("circle").attr('class', 'point correct-point');
+
                 } else {
                     answerButton.text("Check Answer Again");
                 }
