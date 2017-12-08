@@ -318,12 +318,15 @@
         stroke-width: 1.5;
         font-size: 0.7em;
         pointer-events: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
 
     .point-text {
         font-size: 10px;
         font-family: sans-serif;
-        pointer-events: none;
         pointer-events: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -694,6 +697,7 @@
     let addTimeout;
     function displayAddRect() {
         clearTimeout(addTimeout);
+        d3.selectAll('.add-group').remove();
 
         let mousePos = d3.mouse(this);
         let x = xScale.invert(mousePos[0]);
