@@ -102,7 +102,7 @@
     }
 
     #content {
-        margin-top: 20px;
+        margin-top: 40px;
     }
 
     #plot-container {
@@ -135,6 +135,26 @@
         max-height: 535px;
     }
 
+    @media screen and (max-width: 1150px) {
+        #plot-container {
+            border-radius: 5px;
+            margin-right: 0;
+        }
+        #message-container {
+            margin-top: 20px;
+            width: 700px;
+            height: 400px;
+            border-radius: 5px;
+        }
+        #message-body {
+            margin-left: 0;
+        }
+        #message-text {
+            padding-left: 35px;
+            max-height: 230px;
+        }
+    }
+
     #navigation-bar {
         position: absolute;
         bottom: 0;
@@ -150,6 +170,7 @@
 
     #footer {
         margin-top: 35px;
+        margin-bottom: 35px;
         font-weight: 500;
         font-size: 0.9em;
         text-decoration: none;
@@ -947,7 +968,7 @@
                 } else {
                     answerButton.text("Check Answer Again");
                 }
-                
+
             }
         });
 
