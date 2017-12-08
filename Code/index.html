@@ -111,6 +111,10 @@
         max-height: 700px;
     }
 
+    #plot-background {
+        fill: #fff;
+    }
+
     #message-container {
         border-radius: 0px 5px 5px 0px;
         width: 400px;
@@ -353,6 +357,29 @@
         -ms-user-select: none;
         user-select: none;
     }
+
+    .add-rect {
+        fill: #58b446;
+        cursor: pointer;
+    }
+
+    .add-rect:hover {
+        fill: #237B10;
+    }
+    .add-temp-circle {
+        fill: #787878;
+    }
+
+    .add-text {
+        fill: #fff;
+        font-weight: 500;
+        font-size: 0.8em;
+        pointer-events: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 </style>
 
 <script>
@@ -392,6 +419,8 @@
     let plot = wholePlot.append('g')
         .attr('id', 'plot')
         .attr('transform', `translate(${plotMargin},${plotMargin})`);
+
+    let plotBackground;
 
     let points = plot.append('g')
         .attr('id', 'points');
@@ -541,6 +570,13 @@
     function loadData(error, data) {
         if (error) throw error;
         pointData = data;
+        plotBackground = plot.append('rect')
+            .attr('id', 'plot-background')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', plotWidth)
+            .attr('height', plotHeight)
+            .on('mousedown', displayAddRect);
         setUpState();
         drawUpdatedScatterPlot(data);
         drawSecondaryPlotElements();
@@ -550,7 +586,6 @@
     function drawUpdatedScatterPlot(data) {
 
         pointData = data;
-
 
         let circles = points.selectAll('g.point-group');
 
@@ -635,6 +670,67 @@
         xAxis.moveToBack();
         yAxis.moveToBack();
     }
+    function addDataElement(pointPos) {
+        console.log("add");
+        let x = pointPos[0];
+        let y = pointPos[1];
+        let newPointId = 0;
+        pointData.forEach(function (d) {
+            if (d.id >= newPointId) newPointId = d.id + 1;
+        });
+
+        let newPoint = {
+            id: newPointId,
+            isEditable: 1,
+            x: x,
+            y: y,
+            isSolution: 0,
+        };
+        console.log(newPoint);
+        pointData.push(newPoint);
+        drawUpdatedScatterPlot(pointData);
+        drawSecondaryPlotElements();
+    }
+    let addTimeout;
+    function displayAddRect() {
+        clearTimeout(addTimeout);
+
+        let mousePos = d3.mouse(this);
+        let x = xScale.invert(mousePos[0]);
+        let y = yScale.invert(mousePos[1]);
+
+        let addGroup = plot.append('g')
+            .attr('class', 'add-group');
+
+        addGroup.append('rect')
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('rx', 2)
+            .attr('visibility', 'visible')
+            .attr('x', function (d) { return xScale(x) - 7.5; })
+            .attr('y', function (d) { return yScale(y) - 25; })
+            .attr('class', 'add-rect')
+            .on('click', function (d, i) {
+                addDataElement([x,y]);
+                d3.selectAll('.add-group').remove();
+            });
+        addGroup.append('text')
+            .attr('class', 'add-text')
+            .attr('visibility', 'visible')
+            .attr('x', function (d) { return xScale(x) - 3.6; })
+            .attr('y', function (d) { return yScale(y) - 13.2; })
+            .text('+');
+        
+        addGroup.append('circle')
+            .attr('class', 'add-temp-circle')
+            .attr('r', 2.5)
+            .attr('cx', function (d) { return xScale(x); })
+            .attr('cy', function (d) { return yScale(y); });
+
+        addTimeout = setTimeout(function () {
+            d3.selectAll('.add-group').remove();
+        }, 1500);
+    }
     function deleteDataElement(d, i) {
         console.log("delete");
         let filteredData = pointData;
@@ -643,6 +739,19 @@
         });
         drawUpdatedScatterPlot(filteredData);
         drawSecondaryPlotElements();
+    }
+    let deleteTimeout;
+    let lastPointIndex;
+    function displayDeleteButton(d) {
+        if (lastPointIndex == d.id) clearTimeout(deleteTimeout);
+        lastPointIndex = +d.id;
+        let pointGroup = plot.select('#point-group-' + d.id);
+        pointGroup.select('.delete-text').attr('visibility', 'visible');
+        pointGroup.select('.delete-rect').attr('visibility', 'visible');
+        deleteTimeout = setTimeout(function (d) {
+            pointGroup.select('.delete-text').attr('visibility', 'hidden');
+            pointGroup.select('.delete-rect').attr('visibility', 'hidden');
+        }, 2000);
     }
     function updatePointInfoVisibility(d, isVisible) {
         let pointGroup = plot.select('#point-group-' + d.id);
@@ -710,20 +819,6 @@
         }
 
     }
-
-    let timeout;
-    let lastPointIndex;
-    function displayDeleteButton(d) {
-        if (lastPointIndex == d.id) clearTimeout(timeout);
-        lastPointIndex = +d.id;
-        let pointGroup = plot.select('#point-group-' + d.id);
-        pointGroup.select('.delete-text').attr('visibility', 'visible');
-        pointGroup.select('.delete-rect').attr('visibility', 'visible');
-        timeout = setTimeout(function (d) {
-            pointGroup.select('.delete-text').attr('visibility', 'hidden');
-            pointGroup.select('.delete-rect').attr('visibility', 'hidden');
-        }, 2000);
-    }
     function getPointValueText(d) {
         let string = d.x.toFixed(2) + ", " + d.y.toFixed(2);
         return string;
@@ -731,8 +826,9 @@
     var line = d3.line()
         .x(function (d) { return xScale(d.x) })
         .y(function (d) { return yScale(d.y) });
-    
-        function drawSecondaryPlotElements() {
+
+    function drawSecondaryPlotElements() {
+        console.log(pointData.length);
         let sortedDataX = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.x, b.x);
         });
@@ -741,6 +837,7 @@
         });
         if (pointData.length > 2) {
             drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
+            updateQuartileVisibility();
         } else {
             setQuartileVisibility(false);
         }
@@ -751,6 +848,7 @@
             plot.select("#trend-line").remove();
             plot.select("g#chart-lines").remove();
         }
+        plotBackground.moveToBack();
     }
     function drawUpdatedTrendLine(data, sortedDataX, sortedDataY) {
         plot.select("#trend-line").remove();
