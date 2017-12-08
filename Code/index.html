@@ -526,7 +526,7 @@
         return boxAndWhisker;
     }
 
-    d3.csv('8_points.csv', parseInputRow, loadData);
+    d3.csv('test.csv', parseInputRow, loadData);
 
     function parseInputRow(d) {
         return {
@@ -644,22 +644,6 @@
         drawUpdatedScatterPlot(filteredData);
         drawSecondaryPlotElements();
     }
-
-    function drawSecondaryPlotElements() {
-        if (pointData.length > 2) {
-            let sortedDataX = pointData.slice(0).sort(function (a, b) {
-                return d3.ascending(a.x, b.x);
-            });
-            let sortedDataY = pointData.slice(0).sort(function (a, b) {
-                return d3.ascending(a.y, b.y);
-            });
-            drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
-            drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
-            drawUpdatedChartLines(pointData, sortedDataX, sortedDataY);
-        } else {
-            plot.select("#trend-line").remove();
-        }
-    }
     function updatePointInfoVisibility(d, isVisible) {
         let pointGroup = plot.select('#point-group-' + d.id);
         let text = pointGroup.select('.point-value-text')
@@ -740,7 +724,6 @@
             pointGroup.select('.delete-rect').attr('visibility', 'hidden');
         }, 2000);
     }
-
     function getPointValueText(d) {
         let string = d.x.toFixed(2) + ", " + d.y.toFixed(2);
         return string;
@@ -748,6 +731,27 @@
     var line = d3.line()
         .x(function (d) { return xScale(d.x) })
         .y(function (d) { return yScale(d.y) });
+    
+        function drawSecondaryPlotElements() {
+        let sortedDataX = pointData.slice(0).sort(function (a, b) {
+            return d3.ascending(a.x, b.x);
+        });
+        let sortedDataY = pointData.slice(0).sort(function (a, b) {
+            return d3.ascending(a.y, b.y);
+        });
+        if (pointData.length > 2) {
+            drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
+        } else {
+            setQuartileVisibility(false);
+        }
+        if (pointData.length > 1) {
+            drawUpdatedTrendLine(pointData, sortedDataX, sortedDataY);
+            drawUpdatedChartLines(pointData, sortedDataX, sortedDataY);
+        } else {
+            plot.select("#trend-line").remove();
+            plot.select("g#chart-lines").remove();
+        }
+    }
     function drawUpdatedTrendLine(data, sortedDataX, sortedDataY) {
         plot.select("#trend-line").remove();
         if (trendLineActive) {
@@ -789,27 +793,28 @@
             document.getElementById("pcc-text").textContent = '';
         }
     }
-
     function drawUpdatedChartLines(data, sortedDataX, sortedDataY) {
-
         plot.select("g#chart-lines").remove();
-
         if (chartLinesActive) {
             let lines = plot.append('g')
                 .attr('id', 'chart-lines');
-
             lines.append("path")
                 .datum(sortedDataX)
                 .attr("class", "chart-line")
                 .attr("d", line);
-
             lines.moveToBack();
+        }
+    }
+    function updateQuartileVisibility() {
+        if (quartileActive && pointData.length > 2) {
+            setQuartileVisibility(true);
+        } else {
+            setQuartileVisibility(false);
         }
 
     }
-
-    function updateQuartileVisibility() {
-        if (quartileActive) {
+    function setQuartileVisibility(setVisible) {
+        if (setVisible) {
             xQuartiles.attr('visibility', 'visible');
             yQuartiles.attr('visibility', 'visible');
             switch (currentQuartileMode) {
@@ -856,8 +861,8 @@
             yQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
             xQuartiles.select('.boxAndWhiskerElements').attr('visibility', 'hidden');
         }
-
     }
+
     let lowerQuartileYValue = 0;
     let upperQuartileYValue = 0;
     let medianYValue = 0;
