@@ -14,24 +14,7 @@
         <div id="content">
             <!-- svg plot here -->
             <div id="plot-container" class="content-card">
-                <div id="tool-bar">
-                    <span class="tool-bar-item">Trend Line
-                        <input id='trend-line-checkbox' type='checkbox'>
-                        <span id='pcc-text'></span>
-                    </span>
-                    <span class="tool-bar-item">Chart Lines
-                        <input id='chart-lines-checkbox' type='checkbox'>
-                    </span>
-                    <span class="tool-bar-item"> Quartile
-                        <input id='quartile-checkbox' type='checkbox'>
-                        <select id='quartile-mode'>
-                            <option id="quartile-mode-0" value="0">Minimal</option>
-                            <option id="quartile-mode-1" value="1">Box and whisker X</option>
-                            <option id="quartile-mode-2" value="2">Box and whisker Y</option>
-                            <option id="quartile-mode-3" value="3">Box and whisker X &amp Y</option>
-                        </select>
-                    </span>
-                </div>
+
             </div>
             <div id="message-container" class=" content-card">
                 <div id="message-body">
@@ -46,7 +29,21 @@
                         <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
                         remember that this is because this box-and-whisker plot represents the distribution of y values.
                         <br>
-                        <br>When you think you have found a valid position, check your answer to unlock the next question.
+                        <br>When you find a valid position, check your answer to unlock the next question.
+                        <br> Move the
+                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
+                        <br>
+                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
+                        remember that this is because this box-and-whisker plot represents the distribution of y values.
+                        <br>
+                        <br>When you find a valid position, check your answer to unlock the next question.
+                        <br> Move the
+                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
+                        <br>
+                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
+                        remember that this is because this box-and-whisker plot represents the distribution of y values.
+                        <br>
+                        <br>When you find a valid position, check your answer to unlock the next question.
                     </p>
                 </div>
                 <div id="navigation-bar">
@@ -56,10 +53,39 @@
                     <button id="next-button" class="button green inactive">
                         <i class="fa fa-arrow-right" aria-hidden="true"></i>
                     </button>
+                    <br>
                 </div>
 
             </div>
 
+        </div>
+
+        <div id="tool-bar" class='content-card'>
+            <span class="tool-bar-item">Trend Line
+                <input id='trend-line-checkbox' type='checkbox'>
+                <span id='pcc-text'></span>
+            </span>
+            <span class="tool-bar-item">Chart Lines
+                <input id='chart-lines-checkbox' type='checkbox'>
+            </span>
+            <span class="tool-bar-item"> Quartiles
+                <input id='quartile-checkbox' type='checkbox'>
+                <select id='quartile-mode'>
+                    <option id="quartile-mode-0" value="0">Minimal</option>
+                    <option id="quartile-mode-1" value="1">Box &amp whisker X</option>
+                    <option id="quartile-mode-2" value="2">Box &amp whisker Y</option>
+                    <option id="quartile-mode-3" value="3">Box &amp whisker X &amp Y</option>
+                </select>
+            </span>
+
+            <span class='tool-bar-item'>
+                Domain
+                <input type="range" min="1" max="100" value="50" class="slider" id="domain-slider">
+            </span>
+            <span class='tool-bar-item'>
+                Range
+                <input type="range" min="1" max="100" value="50" class="slider" id="range-slider">
+            </span>
         </div>
 
         <div id="footer">
@@ -81,7 +107,7 @@
 <style>
     body {
         font-family: 'Roboto', sans-serif;
-        background-color: #f1f1f1;
+        background-color: #dcdcdc;
     }
 
     .tool-bar-item {
@@ -123,7 +149,7 @@
     }
 
     #message-body {
-        margin-top: 50px;
+        margin-top: 40px;
         margin-left: 15px;
         text-align: left;
     }
@@ -136,7 +162,11 @@
     #message-text {
         overflow-y: auto;
         padding-right: 35px;
-        max-height: 535px;
+        max-height: 565px;
+    }
+
+    .message-text-with-skip {
+        max-height: 515px !important;
     }
 
     @media screen and (max-width: 1150px) {
@@ -155,21 +185,29 @@
         }
         #message-text {
             padding-left: 35px;
-            max-height: 230px;
+            max-height: 265px;
+        }
+        .message-text-with-skip {
+            max-height: 215px !important;
+        }
+        #tool-bar {
+            width: 700px !important;
         }
     }
 
     #navigation-bar {
         position: absolute;
         bottom: 0;
-        margin-bottom: 50px;
+        margin-bottom: 30px;
         width: 100%;
     }
 
     #tool-bar {
-        position: absolute;
-        margin-left: 45px;
-        margin-top: 50px;
+        padding-top: 50px;
+        padding-bottom: 50px;
+        width: 1100px;
+        margin-top: 20px;
+        border-radius: 5px;
     }
 
     #footer {
@@ -222,9 +260,14 @@
     }
 
     .button-check {
-        width: 70%;
+        width: 72%;
     }
 
+    .button-skip {
+        margin-bottom: 11px;
+        width: calc(72.5% + 66px);
+        margin-left: 2px;
+    }
 
     .button-next-hover {
         filter: brightness(85%);
@@ -236,6 +279,10 @@
 
     .green {
         background-color: #43C477;
+    }
+
+    .red {
+        background-color: #FB565E;
     }
 
     .inactive {
@@ -369,6 +416,7 @@
     .add-rect:hover {
         fill: #237B10;
     }
+
     .add-temp-circle {
         fill: #787878;
     }
@@ -382,6 +430,11 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+    }
+
+    .slider {
+        width: 45px;
+
     }
 </style>
 
@@ -715,7 +768,7 @@
             .attr('y', function (d) { return yScale(y) - 25; })
             .attr('class', 'add-rect')
             .on('click', function (d, i) {
-                addDataElement([x,y]);
+                addDataElement([x, y]);
                 d3.selectAll('.add-group').remove();
             });
         addGroup.append('text')
@@ -724,7 +777,7 @@
             .attr('x', function (d) { return xScale(x) - 3.6; })
             .attr('y', function (d) { return yScale(y) - 13.2; })
             .text('+');
-        
+
         addGroup.append('circle')
             .attr('class', 'add-temp-circle')
             .attr('r', 2.5)
@@ -782,6 +835,8 @@
         if (isVisible) {
             pointGroup.select('.point-value-text').attr('visibility', 'visible');
             pointGroup.select('.text-rect').attr('visibility', 'visible');
+            let gridLines = pointGroup.append('g').attr('id', 'grid-lines-group-' + d.id);
+
         } else {
             pointGroup.select('.point-value-text').attr('visibility', 'hidden');
             pointGroup.select('.text-rect').attr('visibility', 'hidden');
@@ -790,6 +845,15 @@
     }
     function onPointDrag(d) {
         let pointGroup = plot.select('#point-group-' + d.id);
+        pointGroup.select('#grid-lines-group-' + d.id).remove();
+        let gridLines = pointGroup.append('g').attr('id', 'grid-lines-group-' + d.id);
+        gridLines.append("line")
+                .attr('x1', xScale(0))
+                .attr('y1', yScale(d.y))
+                .attr('x2', xScale(d.x))
+                .attr('y2', yScale(d.y))
+                .attr('id', 'trend-line')
+                .attr('class', 'trend-line');
         if (pointGroup.classed("editable-point-group")) {
             pointGroup.moveToFront();
             let dragPoint = pointGroup.select('.point');
@@ -1117,11 +1181,9 @@
         answerButton = d3.select('#check-answer-button')
             .on('click', function () {
                 checkAnswer();
-            })
+            });
         nextButton = d3.select('#next-button')
-            .on('click', function () {
-                location.reload();
-            })
+            .on('click', loadNextPage);
         d3.select('#trend-line-checkbox')
             .property('checked', trendLineActive)
             .on('change', function () {
@@ -1151,8 +1213,13 @@
             });
 
         updateQuartileVisibility();
-
     }
+
+    function loadNextPage() {
+        location.reload();
+    }
+
+    let numAttempts = 0;
 
     function checkAnswer() {
         let circles = points.selectAll('g.point-group');
@@ -1170,7 +1237,17 @@
                         .select("circle").attr('class', 'point correct-point');
 
                 } else {
-                    answerButton.text("Check Answer Again");
+                    numAttempts++;
+                    if (numAttempts == 5) {
+                        d3.select('#navigation-bar').insert('button', ':first-child')
+                            .text('Skip Question')
+                            .attr('id', 'skip-button')
+                            .attr('class', 'button button-skip red')
+                            .on('click', loadNextPage);
+                        d3.select('#message-text').attr('class', 'message-text-with-skip');
+                    } else if (numAttempts == 1) {
+                        answerButton.text("Check Answer Again");
+                    }
                 }
 
             }
