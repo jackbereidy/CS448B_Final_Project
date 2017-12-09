@@ -36,14 +36,38 @@
         </div>
 
         <div id="tool-bar" class='content-card'>
-            <span class="tool-bar-item">Correlation Line
+            <span class="tool-bar-item">
+                <span class="information-box">
+                    <span class="information-icon">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </span>
+                    <span class="information-content">A
+                        <b>correlation line</b> indicates the statistical relationship between independent and dependent variables.</span>
+                </span>
+                Correlation Line
                 <input id='trend-line-checkbox' type='checkbox'>
                 <span id='pcc-text'></span>
             </span>
-            <span class="tool-bar-item">Chart Lines
+            <span class="tool-bar-item">
+                <span class="information-box">
+                    <span class="information-icon">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </span>
+                    <span class="information-content">A
+                        <b>chart line</b> represents data in a series. Data points are connected with straight lines. This visualization indicates an ordered relationship between points.</span>
+                </span>
+                Chart Lines
                 <input id='chart-lines-checkbox' type='checkbox'>
             </span>
-            <span class="tool-bar-item"> Box plot
+            <span class="tool-bar-item">
+                <span class="information-box">
+                    <span class="information-icon">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </span>
+                    <span class="information-content">The
+                        <b>box plot</b> is a way to represent the distribution of data. You can display box plots for x and y values separately.</span>
+                </span>
+                Box plot
                 <input id='quartile-checkbox' type='checkbox'>
                 <select id='quartile-mode'>
                     <option id="quartile-mode-0" value="0">Minimal</option>
@@ -57,11 +81,24 @@
             <br>
 
             <span class='tool-bar-item'>
-                <!-- <button></button> -->
+                <span class="information-box">
+                    <span class="information-icon">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </span>
+                    <span class="information-content">The
+                        <b>domain</b> of the plot is the set of all x values in the graph. X values are independent variables.</span>
+                </span>
                 Domain
                 <input type="range" class="slider" id="domain-slider">
             </span>
             <span class='tool-bar-item'>
+                <span class="information-box">
+                    <span class="information-icon">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </span>
+                    <span class="information-content">The
+                        <b>range</b> of the plot is the set of all y values in the graph. Y values are dependent variables.</span>
+                </span>
                 Range
                 <input type="range" class="slider" id="range-slider">
             </span>
@@ -192,6 +229,7 @@
         width: 1100px;
         margin-top: 20px;
         border-radius: 5px;
+        overflow: initial;
     }
 
     #footer {
@@ -258,7 +296,7 @@
     }
 
     .button-quiz {
-        margin-top: 20px;
+        margin-top: 12px;
         margin-left: 0;
     }
 
@@ -430,6 +468,8 @@
 
     .slider {
         width: 200px;
+        position: relative;
+        top: 6px;
     }
 
     .mask {
@@ -448,6 +488,46 @@
         margin-left: 609px;
         width: 91px;
         height: 690px;
+    }
+
+    .information-box {
+        font-size: 0.8em;
+        margin-right: 5px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .information-icon {
+        text-align: center;
+        border-radius: 3px;
+        color: #fff;
+        padding: 3px;
+        padding-left: 5px;
+        padding-right: 6px;
+        background: #c17777;
+    }
+
+    .information-content {
+        font-size: 1.1em !important;
+        color: #000;
+        font-size: 0.7em;
+        text-align: left;
+        visibility: hidden;
+        position: absolute;
+        z-index: 1;
+        left: -145px;
+        margin-left: -60%;
+        min-width: 300px;
+        background: #fff;
+        padding: 20px;
+        bottom: 100%;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 2px 1.1px rgba(0, 0, 0, 0.25);
+    }
+
+    .information-box:hover .information-content {
+        visibility: visible;
     }
 </style>
 
@@ -550,8 +630,8 @@
         }
     } else {
         dataFileName = "data/empty.csv";
-        pageTextHTML = '<span id="message-header">Scatter plot tool</span><br><br> Add points by clicking inside the graph. Points can be moved by dragging the mouse. Points can be deleted by selecting and then clicking <b>x</b>.<br><br>Plot settings can be enabled and modified in the control panel below.<br><br> If you want a challenge, try the quizes:'
-        pageTextHTML += '<button id="correlation-button" class="button button-quiz grey">Correlation quiz</button><br>';
+        pageTextHTML = '<span id="message-header">Scatter plot tool</span><br><br> Add points by clicking inside the graph. Points can be moved by dragging the mouse. Points can be deleted by selecting and then clicking <b>x</b>.<br><br>Plot settings can be enabled and modified in the control panel below.<br><br> If you want a challenge, try a quiz:'
+        pageTextHTML += '<br><button id="correlation-button" class="button button-quiz grey">Correlation quiz</button><br>';
         pageTextHTML += '<button id="box-plot-button" class="button button-quiz grey">Box plot quiz</button>';
         d3.select('#message-text').html(pageTextHTML);
         d3.select('#navigation-bar').remove();
