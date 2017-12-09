@@ -14,7 +14,8 @@
         <div id="content">
             <!-- svg plot here -->
             <div id="plot-container" class="content-card">
-
+                <div class="mask mask-top"></div>
+                <div class="mask mask-right"></div>
             </div>
             <div id="message-container" class=" content-card">
                 <div id="message-body">
@@ -128,6 +129,11 @@
 
     #plot-background {
         fill: #fff;
+    }
+
+    .plot-mask {
+        fill: #fff;
+        background-color: #fff;
     }
 
     #message-container {
@@ -429,8 +435,25 @@
     }
 
     .slider {
-        width: 45px;
+        width: 200px;
+    }
 
+    .mask {
+        background: #fff;
+        position: absolute;
+    }
+
+    .mask-top {
+        margin-left: 5px;
+        width: 690px;
+        height: 95px;
+    }
+
+    .mask-right {
+        margin-top: 5px;
+        margin-left: 609px;
+        width: 91px;
+        height: 690px;
     }
 </style>
 
@@ -470,6 +493,7 @@
         .attr('height', outerHeight)
         .attr('id', 'whole-chart');
 
+
     let plot = wholePlot.append('g')
         .attr('id', 'plot')
         .attr('transform', `translate(${plotMargin},${plotMargin})`);
@@ -495,6 +519,8 @@
         .attr('id', 'y-axis')
         .attr('class', 'axis')
         .call(d3.axisLeft(yScale));
+    updateAxisStyle(xAxis, true);
+    updateAxisStyle(yAxis, false);
 
     let xQuartiles = plot.append('g')
         .attr('id', 'x-quartiles');
@@ -1258,11 +1284,11 @@
             .attr('value', chartCurrentX)
             .on('input', function () {
                 chartCurrentX = +this.value;
-                console.log('change domain ' + chartCurrentX);
                 xScale = d3.scaleLinear()
                     .domain([chartMinX, chartCurrentX])
                     .range([0, plotWidth]);
                 xAxis.call(d3.axisBottom(xScale));
+                updateAxisStyle(xAxis, true);
                 updatePointsWithNewScale();
                 drawUpdatedScatterPlot(pointData);
                 drawSecondaryPlotElements();
@@ -1274,11 +1300,11 @@
             .attr('value', chartCurrentY)
             .on('input', function () {
                 chartCurrentY = +this.value;
-                console.log('change range ' + chartCurrentY);
                 yScale = d3.scaleLinear()
                     .domain([chartMinY, chartCurrentY])
                     .range([plotHeight, 0]);
                 yAxis.call(d3.axisLeft(yScale));
+                updateAxisStyle(yAxis, false);
                 updatePointsWithNewScale();
                 drawUpdatedScatterPlot(pointData);
                 drawSecondaryPlotElements();
@@ -1286,7 +1312,14 @@
 
         updateQuartileVisibility();
     }
-
+    function updateAxisStyle(axis, isXAxis) {
+        if (isXAxis) {
+            axis.selectAll(".tick text").attr("y", 12);
+        } else {
+            axis.selectAll(".tick text").attr("x", -12);
+        }
+        
+    }
     function updatePointsWithNewScale() {
         removeAllAddRemoveButtons();
         pointData.forEach(function (point) {
