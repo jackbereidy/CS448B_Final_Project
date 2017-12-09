@@ -534,6 +534,7 @@
 <script>
 
     let url = new URL(window.location.href);
+    
     let quizID = +url.searchParams.get('quizid');
     let pageIndex = +url.searchParams.get('pageindex');
     let pageLoadFailed = true;
@@ -557,7 +558,7 @@
                 dataFileName = "data/quartile-question-1.csv";
                 quizType = 0;
                 quartileQuizIndex = 6;
-                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=1";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=1&pageindex=1";
                 pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is the <b>maximum</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -566,7 +567,7 @@
                 dataFileName = "data/quartile-question-2.csv";
                 quizType = 0;
                 quartileQuizIndex = 2;
-                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=2";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=1&pageindex=2";
                 pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the <b>second quartile</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -575,7 +576,7 @@
                 dataFileName = "data/quartile-question-3.csv";
                 quizType = 0;
                 quartileQuizIndex = 3;
-                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=3";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=1&pageindex=3";
                 pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is the <b>median</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -584,7 +585,7 @@
                 dataFileName = "data/quartile-question-4.csv";
                 quizType = 0;
                 quartileQuizIndex = 4;
-                nextUrl = "http://localhost:8000/index.html";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html";
                 pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the <b>third quartile</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -601,7 +602,7 @@
                 dataFileName = "data/correlation-question-1.csv";
                 quizType = 1;
                 correlationQuizIndex = 0;
-                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=1";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html";
                 pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows <b>positive correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -610,7 +611,7 @@
                 dataFileName = "data/correlation-question-2.csv";
                 quizType = 1;
                 correlationQuizIndex = 1;
-                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=2";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=2&pageindex=2";
                 pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows <b>weak or no correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -619,7 +620,7 @@
                 dataFileName = "data/correlation-question-3.csv";
                 quizType = 1;
                 correlationQuizIndex = 2;
-                nextUrl = "http://localhost:8000/index.html";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html";
                 pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows a <b>negative correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -1415,12 +1416,12 @@
     function setUpInput() {
         d3.select('#correlation-button')
             .on('click', function () {
-                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=0";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=2&pageindex=0";
                 loadNextPage();
             });
         d3.select('#box-plot-button')
             .on('click', function () {
-                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=0";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=1&pageindex=0";
                 loadNextPage();
             });
         answerButton = d3.select('#check-answer-button')
