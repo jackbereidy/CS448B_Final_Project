@@ -30,20 +30,6 @@
                         remember that this is because this box-and-whisker plot represents the distribution of y values.
                         <br>
                         <br>When you find a valid position, check your answer to unlock the next question.
-                        <br> Move the
-                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
-                        <br>
-                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
-                        remember that this is because this box-and-whisker plot represents the distribution of y values.
-                        <br>
-                        <br>When you find a valid position, check your answer to unlock the next question.
-                        <br> Move the
-                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
-                        <br>
-                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
-                        remember that this is because this box-and-whisker plot represents the distribution of y values.
-                        <br>
-                        <br>When you find a valid position, check your answer to unlock the next question.
                     </p>
                 </div>
                 <div id="navigation-bar">
@@ -61,7 +47,7 @@
         </div>
 
         <div id="tool-bar" class='content-card'>
-            <span class="tool-bar-item">Trend Line
+            <span class="tool-bar-item">Correlation Line
                 <input id='trend-line-checkbox' type='checkbox'>
                 <span id='pcc-text'></span>
             </span>
@@ -77,14 +63,17 @@
                     <option id="quartile-mode-3" value="3">Box &amp whisker X &amp Y</option>
                 </select>
             </span>
+            <br>
+            <br>
+            <br>
 
             <span class='tool-bar-item'>
                 Domain
-                <input type="range" min="1" max="100" value="50" class="slider" id="domain-slider">
+                <input type="range" class="slider" id="domain-slider">
             </span>
             <span class='tool-bar-item'>
                 Range
-                <input type="range" min="1" max="100" value="50" class="slider" id="range-slider">
+                <input type="range" class="slider" id="range-slider">
             </span>
         </div>
 
@@ -326,8 +315,15 @@
     }
 
     .trend-line {
-        stroke-dasharray: 5 5;
+        stroke-dasharray: 15 15;
         stroke: #777;
+        stroke-width: 1.5;
+        pointer-events: none;
+    }
+
+    .grid-line {
+        stroke-dasharray: 5 5;
+        stroke: #ccc;
         stroke-width: 1.5;
         pointer-events: none;
     }
@@ -463,9 +459,11 @@
     let outerHeight = plotHeight + 2 * plotMargin;
 
     let chartMinX = 0;
-    let chartMaxX = 10;
+    let chartCurrentX = 10;
     let chartMinY = 0;
-    let chartMaxY = 10;
+    let chartCurrentY = 10;
+    let chartMaxPossible = 100;
+
 
     let wholePlot = d3.select('#plot-container').append('svg')
         .attr('width', outerWidth)
@@ -482,10 +480,10 @@
         .attr('id', 'points');
 
     let xScale = d3.scaleLinear()
-        .domain([chartMinX, chartMaxX])
+        .domain([chartMinX, chartCurrentX])
         .range([0, plotWidth]);
     let yScale = d3.scaleLinear()
-        .domain([chartMinY, chartMaxY])
+        .domain([chartMinY, chartCurrentY])
         .range([plotHeight, 0]);
 
     let xAxis = plot.append('g')
@@ -666,13 +664,16 @@
                 .on('end', function (d) {
                     displayDeleteButton(d);
                     updatePointInfoVisibility(d, false);
+                    updatePointGridVisibility(d, true, false);
                 }))
             .on('mouseover', function (d) {
                 plot.select('#point-group-' + d.id).moveToFront();
                 updatePointInfoVisibility(d, true);
+                updatePointGridVisibility(d, false, true);
             })
             .on('mouseout', function (d) {
                 updatePointInfoVisibility(d, false);
+                updatePointGridVisibility(d, false, false);
             })
             .on('click', function (d) {
 
@@ -696,7 +697,7 @@
             .attr('class', 'delete-text')
             .attr('visibility', 'visible')
             .attr('x', function (d) { return xScale(d.x) - 3.4; })
-            .attr('y', function (d) { return yScale(d.y) - 13.6; })
+            .attr('y', function (d) { return yScale(d.y) + 22.2; })
             .text('x')
             .moveToBack();
 
@@ -706,18 +707,37 @@
             .attr('rx', 2)
             .attr('visibility', 'visible')
             .attr('x', function (d) { return xScale(d.x) - 7.5; })
-            .attr('y', function (d) { return yScale(d.y) - 25; })
+            .attr('y', function (d) { return yScale(d.y) + 10; })
             .attr('class', 'delete-rect')
             .on('click', function (d, i) {
                 deleteDataElement(d, i);
             })
             .moveToBack();
 
+        let gridLines = newCircles.append('g').attr('id', function (d) { return 'grid-lines-group-' + d.id });
+
+        gridLines.append("line")
+            .attr('x1', xScale(0))
+            .attr('y1', function (d) { return yScale(d.y); })
+            .attr('x2', function (d) { return xScale(d.x); })
+            .attr('y2', function (d) { return yScale(d.y); })
+            .attr('id', function (d) { return 'x-line-' + d.id; })
+            .attr('class', 'grid-line');
+
+        gridLines.append("line")
+            .attr('x1', function (d) { return xScale(d.x); })
+            .attr('y1', plotHeight)
+            .attr('x2', function (d) { return xScale(d.x); })
+            .attr('y2', function (d) { return yScale(d.y); })
+            .attr('id', function (d) { return 'y-line-' + d.id; })
+            .attr('class', 'grid-line');
+
 
         text.attr('visibility', 'hidden');
         textRect.attr('visibility', 'hidden');
         deleteText.attr('visibility', 'hidden');
         deleteRect.attr('visibility', 'hidden');
+        gridLines.attr('visibility', 'hidden');
 
         let unselectedCircles = updatedCircles.exit();
 
@@ -726,8 +746,23 @@
         xAxis.moveToBack();
         yAxis.moveToBack();
     }
+    let dragPointGridVisibility = false;
+    let hoverPointGridVisibility = false;
+    function updatePointGridVisibility(d, isDrag, visible) {
+        if (isDrag == true) {
+            dragPointGridVisibility = visible;
+        } else {
+            hoverPointGridVisibility = visible;
+        }
+        let lineGrids = plot.select('#grid-lines-group-' + d.id);
+        if (dragPointGridVisibility || hoverPointGridVisibility) {
+            lineGrids.attr('visibility', 'visible');
+        } else {
+            lineGrids.attr('visibility', 'hidden');
+        }
+        lineGrids.moveToBack();
+    }
     function addDataElement(pointPos) {
-        console.log("add");
         let x = pointPos[0];
         let y = pointPos[1];
         let newPointId = 0;
@@ -742,7 +777,6 @@
             y: y,
             isSolution: 0,
         };
-        console.log(newPoint);
         pointData.push(newPoint);
         drawUpdatedScatterPlot(pointData);
         drawSecondaryPlotElements();
@@ -765,7 +799,7 @@
             .attr('rx', 2)
             .attr('visibility', 'visible')
             .attr('x', function (d) { return xScale(x) - 7.5; })
-            .attr('y', function (d) { return yScale(y) - 25; })
+            .attr('y', function (d) { return yScale(y) + 10; })
             .attr('class', 'add-rect')
             .on('click', function (d, i) {
                 addDataElement([x, y]);
@@ -775,7 +809,7 @@
             .attr('class', 'add-text')
             .attr('visibility', 'visible')
             .attr('x', function (d) { return xScale(x) - 3.6; })
-            .attr('y', function (d) { return yScale(y) - 13.2; })
+            .attr('y', function (d) { return yScale(y) + 22.2; })
             .text('+');
 
         addGroup.append('circle')
@@ -788,8 +822,12 @@
             d3.selectAll('.add-group').remove();
         }, 1500);
     }
+    function removeAllAddRemoveButtons() {
+        d3.selectAll('.add-group').remove();
+        points.selectAll('.delete-text').attr('visibility', 'hidden');
+        points.selectAll('.delete-rect').attr('visibility', 'hidden');
+    }
     function deleteDataElement(d, i) {
-        console.log("delete");
         let filteredData = pointData;
         filteredData = filteredData.filter(function (dataPoint) {
             return dataPoint.id != d.id;
@@ -835,7 +873,6 @@
         if (isVisible) {
             pointGroup.select('.point-value-text').attr('visibility', 'visible');
             pointGroup.select('.text-rect').attr('visibility', 'visible');
-            let gridLines = pointGroup.append('g').attr('id', 'grid-lines-group-' + d.id);
 
         } else {
             pointGroup.select('.point-value-text').attr('visibility', 'hidden');
@@ -845,47 +882,52 @@
     }
     function onPointDrag(d) {
         let pointGroup = plot.select('#point-group-' + d.id);
-        pointGroup.select('#grid-lines-group-' + d.id).remove();
-        let gridLines = pointGroup.append('g').attr('id', 'grid-lines-group-' + d.id);
-        gridLines.append("line")
-                .attr('x1', xScale(0))
-                .attr('y1', yScale(d.y))
-                .attr('x2', xScale(d.x))
-                .attr('y2', yScale(d.y))
-                .attr('id', 'trend-line')
-                .attr('class', 'trend-line');
+        updatePointGridVisibility(d, true, true);
         if (pointGroup.classed("editable-point-group")) {
             pointGroup.moveToFront();
             let dragPoint = pointGroup.select('.point');
-            dragPoint.attr('cy',
-                function (d) {
-                    if (yScale.invert(d3.event.y) < chartMinY) {
-                        d.y = chartMinY;
-                        return yScale(chartMinY);
-                    } else if (yScale.invert(d3.event.y) > chartMaxY) {
-                        d.y = chartMaxY;
-                        return yScale(chartMaxY);
-                    } else {
-                        d.y = yScale.invert(d3.event.y);
-                        return d3.event.y;
-                    }
-                })
+            dragPoint.attr('cy', function (d) {
+                if (yScale.invert(d3.event.y) < chartMinY) {
+                    d.y = chartMinY;
+                    return yScale(chartMinY);
+                } else if (yScale.invert(d3.event.y) > chartCurrentY) {
+                    d.y = chartCurrentY;
+                    return yScale(chartCurrentY);
+                } else {
+                    d.y = yScale.invert(d3.event.y);
+                    return d3.event.y;
+                }
+            })
                 .attr('cx', function (d) {
                     if (xScale.invert(d3.event.x) < chartMinX) {
                         d.x = chartMinX;
                         return xScale(chartMinX);
-                    } else if (xScale.invert(d3.event.x) > chartMaxX) {
-                        d.x = chartMaxX;
-                        return xScale(chartMaxX);
+                    } else if (xScale.invert(d3.event.x) > chartCurrentX) {
+                        d.x = chartCurrentX;
+                        return xScale(chartCurrentX);
                     } else {
                         d.x = xScale.invert(d3.event.x);
                         return d3.event.x;
                     }
                 })
+
+            updateGridLineLocationForPoint(d);
+
             updatePointInfoVisibility(d, true);
             drawSecondaryPlotElements(pointData);
         }
 
+    }
+    function updateGridLineLocationForPoint(d) {
+        let gridLines = plot.select('#grid-lines-group-' + d.id);
+        gridLines.select('#x-line-' + d.id)
+            .attr('y1', function (d) { return yScale(d.y); })
+            .attr('x2', function (d) { return xScale(d.x); })
+            .attr('y2', function (d) { return yScale(d.y); });
+        gridLines.select('#y-line-' + d.id)
+            .attr('x1', function (d) { return xScale(d.x); })
+            .attr('x2', function (d) { return xScale(d.x); })
+            .attr('y2', function (d) { return yScale(d.y); });
     }
     function getPointValueText(d) {
         let string = d.x.toFixed(2) + ", " + d.y.toFixed(2);
@@ -896,7 +938,6 @@
         .y(function (d) { return yScale(d.y) });
 
     function drawSecondaryPlotElements() {
-        console.log(pointData.length);
         let sortedDataX = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.x, b.x);
         });
@@ -938,7 +979,6 @@
 
             let a = ((sumY * sumXSquare) - (sumX * sumXY)) / ((n * sumXSquare) - (sumX * sumX));
             let b = ((n * sumXY) - (sumX * sumY)) / ((n * sumXSquare) - (sumX * sumX));
-            //console.log("a: " + a + ", b: " + b);
 
             let trendLine = plot.append("line")
                 .attr('x1', xScale(sortedDataX[0].x))
@@ -1212,7 +1252,49 @@
                 }
             });
 
+        let domainSlider = d3.select('#domain-slider')
+            .attr('min', chartMinX + 1)
+            .attr('max', chartMaxPossible)
+            .attr('value', chartCurrentX)
+            .on('input', function () {
+                chartCurrentX = +this.value;
+                console.log('change domain ' + chartCurrentX);
+                xScale = d3.scaleLinear()
+                    .domain([chartMinX, chartCurrentX])
+                    .range([0, plotWidth]);
+                xAxis.call(d3.axisBottom(xScale));
+                updatePointsWithNewScale();
+                drawUpdatedScatterPlot(pointData);
+                drawSecondaryPlotElements();
+            });
+
+        let rangeSlider = d3.select('#range-slider')
+            .attr('min', chartMinY + 1)
+            .attr('max', chartMaxPossible)
+            .attr('value', chartCurrentY)
+            .on('input', function () {
+                chartCurrentY = +this.value;
+                console.log('change range ' + chartCurrentY);
+                yScale = d3.scaleLinear()
+                    .domain([chartMinY, chartCurrentY])
+                    .range([plotHeight, 0]);
+                yAxis.call(d3.axisLeft(yScale));
+                updatePointsWithNewScale();
+                drawUpdatedScatterPlot(pointData);
+                drawSecondaryPlotElements();
+            });
+
         updateQuartileVisibility();
+    }
+
+    function updatePointsWithNewScale() {
+        removeAllAddRemoveButtons();
+        pointData.forEach(function (point) {
+            points.select('#point-group-' + point.id).select('circle')
+                .attr('cx', function (d) { return xScale(point.x); })
+                .attr('cy', function (d) { return yScale(point.y); });
+            updateGridLineLocationForPoint(point);
+        });
     }
 
     function loadNextPage() {
@@ -1228,7 +1310,7 @@
         circles.each(function (d) {
             if (d.isSolution) {
                 console.log("solution point with id: " + d.id + " and y value: " + d.y);
-                if (+d.y >= yScale.invert(lowerQuartileYValue) && +d.y <= yScale.invert(medianYValue)) {
+                if (+d.y >= yScale.invert(lowerQuartileYValue) && +d.y < yScale.invert(medianYValue)) {
                     console.log("yay correct answer!");
                     answerButton.text("Correct!")
                         .attr("class", "button button-check inactive");
