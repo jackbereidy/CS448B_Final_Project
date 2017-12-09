@@ -602,7 +602,7 @@
                 dataFileName = "data/correlation-question-1.csv";
                 quizType = 1;
                 correlationQuizIndex = 0;
-                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html";
+                nextUrl = "https://jackbereidy.github.io/CS448B_Final_Project/Code/index.html?quizid=2&pageindex=1";
                 pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows <b>positive correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
