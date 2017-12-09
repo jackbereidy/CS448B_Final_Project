@@ -458,6 +458,7 @@
     let quizType;
     let pageTextHTML;
     let quartileQuizIndex;
+    let correlationQuizIndex;
     let nextUrl;
 
     let quizActive;
@@ -473,8 +474,8 @@
                 dataFileName = "data/quartile-question-1.csv";
                 quizType = 0;
                 quartileQuizIndex = 6;
-                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=1";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=1";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the maximum of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -482,7 +483,7 @@
                 dataFileName = "data/quartile-question-2.csv";
                 quizType = 0;
                 quartileQuizIndex = 2;
-                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=2";
+                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=2";
                 pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
@@ -491,8 +492,8 @@
                 dataFileName = "data/quartile-question-3.csv";
                 quizType = 0;
                 quartileQuizIndex = 3;
-                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=3";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=3";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the median of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -501,7 +502,7 @@
                 quizType = 0;
                 quartileQuizIndex = 4;
                 nextUrl = "http://localhost:8000/index.html";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the second quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -509,7 +510,41 @@
                 // load home page
                 break;
         }
-    } 
+    } else if (quizID == 2) {
+        pageLoadFailed = false;
+        switch (pageIndex) {
+            case 0:
+                dataFileName = "data/correlation-question-1.csv";
+                quizType = 1;
+                correlationQuizIndex = 0;
+                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=1";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the maximum of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            case 1:
+                dataFileName = "data/correlation-question-2.csv";
+                quizType = 1;
+                correlationQuizIndex = 1;
+                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=2";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            case 2:
+                dataFileName = "data/correlation-question-3.csv";
+                quizType = 1;
+                correlationQuizIndex = 2;
+                nextUrl = "http://localhost:8000/index.html";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the median of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            default:
+                // load home page
+                break;
+        }
+    }
 
     function parseInputRow(d) {
         return {
@@ -808,6 +843,7 @@
     }
     let dragPointGridVisibility = false;
     let hoverPointGridVisibility = false;
+    let numGridLinesActive = 0;
     function updatePointGridVisibility(d, isDrag, visible) {
         if (isDrag == true) {
             dragPointGridVisibility = visible;
@@ -815,10 +851,12 @@
             hoverPointGridVisibility = visible;
         }
         let lineGrids = plot.select('#grid-lines-group-' + d.id);
-        if (dragPointGridVisibility || hoverPointGridVisibility) {
+        if ((dragPointGridVisibility || hoverPointGridVisibility) && numGridLinesActive == 0) {
             lineGrids.attr('visibility', 'visible');
-        } else {
+            numGridLinesActive++;
+        } else if (!dragPointGridVisibility && !hoverPointGridVisibility) {
             lineGrids.attr('visibility', 'hidden');
+            numGridLinesActive--;
         }
         lineGrids.moveToBack();
     }
@@ -843,44 +881,46 @@
     }
     let addTimeout;
     function displayAddRect() {
-        clearTimeout(addTimeout);
-        d3.selectAll('.add-group').remove();
-
-        let mousePos = d3.mouse(this);
-        let x = xScale.invert(mousePos[0]);
-        let y = yScale.invert(mousePos[1]);
-
-        let addGroup = plot.append('g')
-            .attr('class', 'add-group');
-
-        addGroup.append('rect')
-            .attr('width', 15)
-            .attr('height', 15)
-            .attr('rx', 2)
-            .attr('visibility', 'visible')
-            .attr('x', function (d) { return xScale(x) - 7.5; })
-            .attr('y', function (d) { return yScale(y) + 10; })
-            .attr('class', 'add-rect')
-            .on('click', function (d, i) {
-                addDataElement([x, y]);
-                d3.selectAll('.add-group').remove();
-            });
-        addGroup.append('text')
-            .attr('class', 'add-text')
-            .attr('visibility', 'visible')
-            .attr('x', function (d) { return xScale(x) - 3.6; })
-            .attr('y', function (d) { return yScale(y) + 22.2; })
-            .text('+');
-
-        addGroup.append('circle')
-            .attr('class', 'add-temp-circle')
-            .attr('r', 2.5)
-            .attr('cx', function (d) { return xScale(x); })
-            .attr('cy', function (d) { return yScale(y); });
-
-        addTimeout = setTimeout(function () {
+        if (!quizActive) {
+            clearTimeout(addTimeout);
             d3.selectAll('.add-group').remove();
-        }, 1500);
+
+            let mousePos = d3.mouse(this);
+            let x = xScale.invert(mousePos[0]);
+            let y = yScale.invert(mousePos[1]);
+
+            let addGroup = plot.append('g')
+                .attr('class', 'add-group');
+
+            addGroup.append('rect')
+                .attr('width', 15)
+                .attr('height', 15)
+                .attr('rx', 2)
+                .attr('visibility', 'visible')
+                .attr('x', function (d) { return xScale(x) - 7.5; })
+                .attr('y', function (d) { return yScale(y) + 10; })
+                .attr('class', 'add-rect')
+                .on('click', function (d, i) {
+                    addDataElement([x, y]);
+                    d3.selectAll('.add-group').remove();
+                });
+            addGroup.append('text')
+                .attr('class', 'add-text')
+                .attr('visibility', 'visible')
+                .attr('x', function (d) { return xScale(x) - 3.6; })
+                .attr('y', function (d) { return yScale(y) + 22.2; })
+                .text('+');
+
+            addGroup.append('circle')
+                .attr('class', 'add-temp-circle')
+                .attr('r', 2.5)
+                .attr('cx', function (d) { return xScale(x); })
+                .attr('cy', function (d) { return yScale(y); });
+
+            addTimeout = setTimeout(function () {
+                d3.selectAll('.add-group').remove();
+            }, 1500);
+        }
     }
     function removeAllAddRemoveButtons() {
         d3.selectAll('.add-group').remove();
@@ -898,15 +938,17 @@
     let deleteTimeout;
     let lastPointIndex;
     function displayDeleteButton(d) {
-        if (lastPointIndex == d.id) clearTimeout(deleteTimeout);
-        lastPointIndex = +d.id;
-        let pointGroup = plot.select('#point-group-' + d.id);
-        pointGroup.select('.delete-text').attr('visibility', 'visible');
-        pointGroup.select('.delete-rect').attr('visibility', 'visible');
-        deleteTimeout = setTimeout(function (d) {
-            pointGroup.select('.delete-text').attr('visibility', 'hidden');
-            pointGroup.select('.delete-rect').attr('visibility', 'hidden');
-        }, 2000);
+        if (!quizActive) {
+            if (lastPointIndex == d.id) clearTimeout(deleteTimeout);
+            lastPointIndex = +d.id;
+            let pointGroup = plot.select('#point-group-' + d.id);
+            pointGroup.select('.delete-text').attr('visibility', 'visible');
+            pointGroup.select('.delete-rect').attr('visibility', 'visible');
+            deleteTimeout = setTimeout(function (d) {
+                pointGroup.select('.delete-text').attr('visibility', 'hidden');
+                pointGroup.select('.delete-rect').attr('visibility', 'hidden');
+            }, 2000);
+        }
     }
     function updatePointInfoVisibility(d, isVisible) {
         let pointGroup = plot.select('#point-group-' + d.id);
