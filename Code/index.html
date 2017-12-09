@@ -19,19 +19,7 @@
             </div>
             <div id="message-container" class=" content-card">
                 <div id="message-body">
-                    <p id="message-text">
-                        <span id="message-header">
-                            Box-and-whisker plot quiz
-                        </span>
-                        <br>
-                        <br> Move the
-                        <span style="font-weight: 700;color:#4682b4">blue</span> point so that it's y value is in the first quartile of the box-and-whisker plot.
-                        <br>
-                        <br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might
-                        remember that this is because this box-and-whisker plot represents the distribution of y values.
-                        <br>
-                        <br>When you find a valid position, check your answer to unlock the next question.
-                    </p>
+                    <p id="message-text"></p>
                 </div>
                 <div id="navigation-bar">
                     <button id="check-answer-button" class="button button-check grey">
@@ -459,20 +447,78 @@
 
 <script>
 
-
-    console.log(window.location.href);
     let url = new URL(window.location.href);
-    let quizID = url.searchParams.get('quizid');
-    if (quizID) {
-        console.log(quizID);
-    } else {
-        console.log('no quiz id');
+    let quizID = +url.searchParams.get('quizid');
+    let pageIndex = +url.searchParams.get('pageindex');
+    let pageLoadFailed = true;
+    console.log(quizID);
+    console.log(pageIndex);
+
+    let dataFileName;
+    let quizType;
+    let pageTextHTML;
+    let quartileQuizIndex;
+    let nextUrl;
+
+    let quizActive;
+    if (quizID != 0) {
+        quizActive = true;
     }
-    let pageIndex = url.searchParams.get('pageindex');
-    if (pageIndex) {
-        console.log(pageIndex);
-    } else {
-        console.log('no page id');
+    console.log(quizActive);
+
+    if (quizID == 1) {
+        pageLoadFailed = false;
+        switch (pageIndex) {
+            case 0:
+                dataFileName = "data/quartile-question-1.csv";
+                quizType = 0;
+                quartileQuizIndex = 6;
+                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=1";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            case 1:
+                dataFileName = "data/quartile-question-2.csv";
+                quizType = 0;
+                quartileQuizIndex = 2;
+                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=2";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            case 2:
+                dataFileName = "data/quartile-question-3.csv";
+                quizType = 0;
+                quartileQuizIndex = 3;
+                nextUrl = "http://localhost:8000/index.html?quizid=0&pageindex=3";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            case 3:
+                dataFileName = "data/quartile-question-4.csv";
+                quizType = 0;
+                quartileQuizIndex = 4;
+                nextUrl = "http://localhost:8000/index.html";
+                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                d3.select('#message-text').html(pageTextHTML);
+                d3.csv(dataFileName, parseInputRow, loadData);
+                break;
+            default:
+                // load home page
+                break;
+        }
+    } 
+
+    function parseInputRow(d) {
+        return {
+            id: +d.id,
+            isEditable: +d.isEditable == 1,
+            x: +d.x,
+            y: +d.y,
+            isSolution: +d.isSolution == 1,
+        };
     }
 
     let plotWidth = 500;
@@ -633,18 +679,6 @@
                 .attr('x2', 12.5);
         }
         return boxAndWhisker;
-    }
-
-    d3.csv('test.csv', parseInputRow, loadData);
-
-    function parseInputRow(d) {
-        return {
-            id: +d.id,
-            isEditable: +d.isEditable == 1,
-            x: +d.x,
-            y: +d.y,
-            isSolution: +d.isSolution == 1,
-        };
     }
 
     function loadData(error, data) {
@@ -1318,7 +1352,7 @@
         } else {
             axis.selectAll(".tick text").attr("x", -12);
         }
-        
+
     }
     function updatePointsWithNewScale() {
         removeAllAddRemoveButtons();
@@ -1331,26 +1365,32 @@
     }
 
     function loadNextPage() {
-        location.reload();
+        window.location.href = nextUrl;
     }
 
     let numAttempts = 0;
 
     function checkAnswer() {
+        let correct = false;
         let circles = points.selectAll('g.point-group');
-        let updatedCircles = circles.data(pointData, d => d.id);
-        let enterSelection = updatedCircles.enter();
         circles.each(function (d) {
             if (d.isSolution) {
-                console.log("solution point with id: " + d.id + " and y value: " + d.y);
-                if (+d.y >= yScale.invert(lowerQuartileYValue) && +d.y < yScale.invert(medianYValue)) {
-                    console.log("yay correct answer!");
+                switch (quizType) {
+                    case 0:
+                        correct = checkQuartileAnswer(d);
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        break;
+                }
+                if (correct) {
+                    d3.select('#skip-button').remove();
                     answerButton.text("Correct!")
                         .attr("class", "button button-check inactive");
                     nextButton.attr("class", "button green");
                     d3.select('#point-group-' + d.id).attr('class', 'point-group uneditable-point-group')
                         .select("circle").attr('class', 'point correct-point');
-
                 } else {
                     numAttempts++;
                     if (numAttempts == 5) {
@@ -1364,10 +1404,40 @@
                         answerButton.text("Check Answer Again");
                     }
                 }
-
             }
         });
+    }
 
+    function checkQuartileAnswer(d) {
+        let compareFloat = floatComp(+d.y);
+        switch (quartileQuizIndex) {
+            case 0:
+                if (compareFloat == floatComp(yScale.invert(lowExtremeYValue))) return true;
+                break;
+            case 1:
+                if (compareFloat > floatComp(yScale.invert(lowExtremeYValue)) && compareFloat < floatComp(yScale.invert(lowerQuartileYValue))) return true;
+                break;
+            case 2:
+                if (compareFloat >= floatComp(yScale.invert(lowerQuartileYValue)) && compareFloat < floatComp(yScale.invert(medianYValue))) return true;
+                break;
+            case 3:
+                if (compareFloat == floatComp(yScale.invert(medianYValue))) return true;
+                break;
+            case 4:
+                if (compareFloat > floatComp(yScale.invert(medianYValue)) && compareFloat <= floatComp(yScale.invert(upperQuartileYValue))) return true;
+                break;
+            case 5:
+                if (compareFloat > floatComp(yScale.invert(upperQuartileYValue)) && compareFloat < floatComp(yScale.invert(highExtremeYValue))) return true;
+                break;
+            case 6:
+                if (compareFloat == floatComp(yScale.invert(highExtremeYValue))) return true;
+                break;
+        }
+        return false;
+    }
+
+    function floatComp(f) {
+        return Math.floor(f * 1000);
     }
 
     // moveToBack(), moveToFront() attribution: http://blockbuilder.org/eesur/4e0a69d57d3bfc8a82c2
