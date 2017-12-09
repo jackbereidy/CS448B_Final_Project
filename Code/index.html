@@ -43,7 +43,7 @@
             <span class="tool-bar-item">Chart Lines
                 <input id='chart-lines-checkbox' type='checkbox'>
             </span>
-            <span class="tool-bar-item"> Quartiles
+            <span class="tool-bar-item"> Box plot
                 <input id='quartile-checkbox' type='checkbox'>
                 <select id='quartile-mode'>
                     <option id="quartile-mode-0" value="0">Minimal</option>
@@ -57,6 +57,7 @@
             <br>
 
             <span class='tool-bar-item'>
+                <!-- <button></button> -->
                 Domain
                 <input type="range" class="slider" id="domain-slider">
             </span>
@@ -256,6 +257,11 @@
         filter: brightness(85%);
     }
 
+    .button-quiz {
+        margin-top: 20px;
+        margin-left: 0;
+    }
+
     .grey {
         background-color: #494949;
     }
@@ -451,8 +457,6 @@
     let quizID = +url.searchParams.get('quizid');
     let pageIndex = +url.searchParams.get('pageindex');
     let pageLoadFailed = true;
-    console.log(quizID);
-    console.log(pageIndex);
 
     let dataFileName;
     let quizType;
@@ -461,11 +465,10 @@
     let correlationQuizIndex;
     let nextUrl;
 
-    let quizActive;
+    let quizActive = false;
     if (quizID != 0) {
         quizActive = true;
     }
-    console.log(quizActive);
 
     if (quizID == 1) {
         pageLoadFailed = false;
@@ -475,7 +478,7 @@
                 quizType = 0;
                 quartileQuizIndex = 6;
                 nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=1";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the maximum of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is the <b>maximum</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -484,7 +487,7 @@
                 quizType = 0;
                 quartileQuizIndex = 2;
                 nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=2";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the <b>second quartile</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -493,7 +496,7 @@
                 quizType = 0;
                 quartileQuizIndex = 3;
                 nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=3";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the median of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is the <b>median</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -502,7 +505,7 @@
                 quizType = 0;
                 quartileQuizIndex = 4;
                 nextUrl = "http://localhost:8000/index.html";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the second quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Box plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the <b>third quartile</b> of the Box plot.<br><br>Notice that changes to the x value of the point do not change the Box plot. You might remember that this is because this Box plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -514,11 +517,12 @@
         pageLoadFailed = false;
         switch (pageIndex) {
             case 0:
+
                 dataFileName = "data/correlation-question-1.csv";
                 quizType = 1;
                 correlationQuizIndex = 0;
                 nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=1";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the maximum of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows <b>positive correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -527,7 +531,7 @@
                 quizType = 1;
                 correlationQuizIndex = 1;
                 nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=2";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the first quartile of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows <b>weak or no correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -536,7 +540,7 @@
                 quizType = 1;
                 correlationQuizIndex = 2;
                 nextUrl = "http://localhost:8000/index.html";
-                pageTextHTML = '<span id="message-header">Box-and-whisker plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> point so that it\'s y value is in the median of the box-and-whisker plot.<br><br>Notice that changes to the x value of the point do not change the box-and-whisker plot. You might remember that this is because this box-and-whisker plot represents the distribution of y values.<br><br>When you find a valid position, check your answer to unlock the next question.'
+                pageTextHTML = '<span id="message-header">Correlation plot quiz</span><br><br> Move the <span style="font-weight: 700;color:#4682b4">blue</span> points so that the data shows a <b>negative correlation</b>.<br><br>When you find a valid position, check your answer to unlock the next question.'
                 d3.select('#message-text').html(pageTextHTML);
                 d3.csv(dataFileName, parseInputRow, loadData);
                 break;
@@ -544,6 +548,14 @@
                 // load home page
                 break;
         }
+    } else {
+        dataFileName = "data/empty.csv";
+        pageTextHTML = '<span id="message-header">Scatter plot tool</span><br><br> Add points by clicking inside the graph. Points can be moved by dragging the mouse. Points can be deleted by selecting and then clicking <b>x</b>.<br><br>Plot settings can be enabled and modified in the control panel below.<br><br> If you want a challenge, try the quizes:'
+        pageTextHTML += '<button id="correlation-button" class="button button-quiz grey">Correlation quiz</button><br>';
+        pageTextHTML += '<button id="box-plot-button" class="button button-quiz grey">Box plot quiz</button>';
+        d3.select('#message-text').html(pageTextHTML);
+        d3.select('#navigation-bar').remove();
+        d3.csv(dataFileName, parseInputRow, loadData);
     }
 
     function parseInputRow(d) {
@@ -1046,7 +1058,7 @@
         let sortedDataY = pointData.slice(0).sort(function (a, b) {
             return d3.ascending(a.y, b.y);
         });
-        if (pointData.length > 2) {
+        if (pointData.length > 4) {
             drawUpdatedQuartiles(pointData, sortedDataX, sortedDataY);
             updateQuartileVisibility();
         } else {
@@ -1061,6 +1073,7 @@
         }
         plotBackground.moveToBack();
     }
+    let pcc;
     function drawUpdatedTrendLine(data, sortedDataX, sortedDataY) {
         plot.select("#trend-line").remove();
         if (trendLineActive) {
@@ -1094,7 +1107,7 @@
 
             let pccNumerator = (n * sumXY) - (sumX * sumY);
             let pccDenominator = Math.sqrt(((n * sumXSquare) - (sumX * sumX)) * ((n * sumYSquare) - (sumY * sumY)));
-            let pcc = pccNumerator / pccDenominator;
+            pcc = pccNumerator / pccDenominator;
 
             // document.getElementById("pcc-text").textContent = 'Pearson correlation coefficient (r): ' + pcc.toFixed(3);
         } else {
@@ -1308,8 +1321,8 @@
     }
 
     function setUpState() {
-        trendLineActive = false;
-        quartileActive = true;
+        trendLineActive = (quizID == 2);
+        quartileActive = (quizID == 1);
         chartLinesActive = false;
         selectBox = document.getElementById('quartile-mode');
         currentQuartileMode = 2;
@@ -1320,6 +1333,16 @@
     let answerButton;
     let nextButton;
     function setUpInput() {
+        d3.select('#correlation-button')
+            .on('click', function () {
+                nextUrl = "http://localhost:8000/index.html?quizid=2&pageindex=0";
+                loadNextPage();
+            });
+        d3.select('#box-plot-button')
+            .on('click', function () {
+                nextUrl = "http://localhost:8000/index.html?quizid=1&pageindex=0";
+                loadNextPage();
+            });
         answerButton = d3.select('#check-answer-button')
             .on('click', function () {
                 checkAnswer();
@@ -1327,6 +1350,7 @@
         nextButton = d3.select('#next-button')
             .on('click', loadNextPage);
         d3.select('#trend-line-checkbox')
+            .property("disabled", (quizID == 2) && quizActive)
             .property('checked', trendLineActive)
             .on('change', function () {
                 trendLineActive = this.checked;
@@ -1339,6 +1363,7 @@
                 drawSecondaryPlotElements(pointData);
             });
         d3.select('#quartile-checkbox')
+            .property("disabled", (quizID == 1) && quizActive)
             .property('checked', quartileActive)
             .on('change', function () {
                 quartileActive = this.checked;
@@ -1355,6 +1380,7 @@
             });
 
         let domainSlider = d3.select('#domain-slider')
+            .property("disabled", quizActive)
             .attr('min', chartMinX + 1)
             .attr('max', chartMaxPossible)
             .attr('value', chartCurrentX)
@@ -1371,6 +1397,7 @@
             });
 
         let rangeSlider = d3.select('#range-slider')
+            .property("disabled", quizActive)
             .attr('min', chartMinY + 1)
             .attr('max', chartMaxPossible)
             .attr('value', chartCurrentY)
@@ -1415,39 +1442,44 @@
     function checkAnswer() {
         let correct = false;
         let circles = points.selectAll('g.point-group');
-        circles.each(function (d) {
-            if (d.isSolution) {
-                switch (quizType) {
-                    case 0:
+        switch (quizType) {
+            case 0:
+                circles.each(function (d) {
+                    if (d.isSolution) {
                         correct = checkQuartileAnswer(d);
-                        break;
-                    case 1:
-                        break;
-                    default:
-                        break;
-                }
-                if (correct) {
-                    d3.select('#skip-button').remove();
-                    answerButton.text("Correct!")
-                        .attr("class", "button button-check inactive");
-                    nextButton.attr("class", "button green");
+                    }
+                });
+                break;
+            case 1:
+                correct = checkCorrelationAnswer();
+                break;
+            default:
+                break;
+        }
+        if (correct) {
+            d3.select('#skip-button').remove();
+            answerButton.text("Correct!")
+                .attr("class", "button button-check inactive");
+            nextButton.attr("class", "button green");
+            circles.each(function (d) {
+                if (d.isSolution) {
                     d3.select('#point-group-' + d.id).attr('class', 'point-group uneditable-point-group')
                         .select("circle").attr('class', 'point correct-point');
-                } else {
-                    numAttempts++;
-                    if (numAttempts == 5) {
-                        d3.select('#navigation-bar').insert('button', ':first-child')
-                            .text('Skip Question')
-                            .attr('id', 'skip-button')
-                            .attr('class', 'button button-skip red')
-                            .on('click', loadNextPage);
-                        d3.select('#message-text').attr('class', 'message-text-with-skip');
-                    } else if (numAttempts == 1) {
-                        answerButton.text("Check Answer Again");
-                    }
                 }
+            });
+        } else {
+            numAttempts++;
+            if (numAttempts == 5) {
+                d3.select('#navigation-bar').insert('button', ':first-child')
+                    .text('Skip Question')
+                    .attr('id', 'skip-button')
+                    .attr('class', 'button button-skip red')
+                    .on('click', loadNextPage);
+                d3.select('#message-text').attr('class', 'message-text-with-skip');
+            } else if (numAttempts == 1) {
+                answerButton.text("Check Answer Again");
             }
-        });
+        }
     }
 
     function checkQuartileAnswer(d) {
@@ -1477,9 +1509,24 @@
         }
         return false;
     }
-
     function floatComp(f) {
         return Math.floor(f * 1000);
+    }
+
+    function checkCorrelationAnswer() {
+        switch (correlationQuizIndex) {
+            case 0:
+
+                if (pcc >= 0.55) return true;
+                break;
+            case 1:
+                if (pcc < 0.55 && pcc > -0.55) return true;
+                break;
+            case 2:
+                if (pcc <= -0.55) return true;
+                break;
+        }
+        return false;
     }
 
     // moveToBack(), moveToFront() attribution: http://blockbuilder.org/eesur/4e0a69d57d3bfc8a82c2
