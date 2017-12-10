@@ -636,7 +636,7 @@
         }
     } else {
         dataFileName = "data/empty.csv";
-        pageTextHTML = '<span id="message-header">Scatter plot tool</span><br><br> Add points by clicking inside the graph. Points can be moved by dragging the mouse. Points can be deleted by selecting and then clicking <b>x</b>.<br><br>Plot settings can be enabled and modified in the control panel below.<br><br> If you want a challenge, try a quiz:'
+        pageTextHTML = '<span id="message-header">Scatter plot tool</span><br><br> Add points by clicking inside the graph. Points can be moved by dragging them with the mouse. Points can be deleted by selecting and then clicking <b>x</b>.<br><br>Plot settings can be enabled and modified in the control panel below.<br><br> If you want a challenge, try a quiz:'
         pageTextHTML += '<br><button id="correlation-button" class="button button-quiz grey">Correlation quiz</button><br>';
         pageTextHTML += '<button id="box-plot-button" class="button button-quiz grey">Box plot quiz</button>';
         d3.select('#message-text').html(pageTextHTML);
@@ -1563,7 +1563,7 @@
                     .on('click', loadNextPage);
                 d3.select('#message-text').attr('class', 'message-text-with-skip');
             } else if (numAttempts == 1) {
-                answerButton.text("Check Answer Again");
+                answerButton.text("Incorrect. Check Answer Again");
             }
         }
     }
